@@ -59,11 +59,3 @@ module.exports = async (story, input, user) => {
     throw error;
   }
 };
-
-// API:
-
-// authorize -> getInputFromHttpRequest -> validateInput -> handler -> sendResponse
-
-// CMD:
-
-// authorize -> validateInput -> handler
