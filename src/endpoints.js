@@ -9,14 +9,7 @@ module.exports = (app) => {
 
   return [
     {
-      apiPrefix: "/categories/",
-      endpoints: [
-        ["get", "/", "categories/userCanReadCategories"],
-        ["post", "/", "categories/userCanCreateCategory"],
-        ["get", "/:uuid", "categories/userCanReadCategory"],
-        ["put", "/:uuid", "categories/userCanUpdateCategory"],
-        ["delete", "/:uuid", "categories/userCanDeleteCategory"],
-      ],
+      endpoints: [],
     },
   ];
 };
