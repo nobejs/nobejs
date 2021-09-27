@@ -1,0 +1,32 @@
+{
+  "name": "nobejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Rajiv Seelam",
+  "license": "MIT",
+  "scripts": {
+    "gen:user": "node ./core/utils/randomUser",
+    "test": "jest --runInBand",
+    "serve": "ENVFILE=.env DEBUG=true nodemon server.js",
+    "db": "knex",
+    "db:migrate": "knex migrate:latest",
+    "db:rollback": "knex migrate:rollback",
+    "db:migration": "knex migrate:make"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "fastify": "^3.21.6",
+    "jest": "^27.2.1",
+    "jwt-decode": "^3.1.2",
+    "knex": "^0.95.11",
+    "njwt": "^1.1.0",
+    "path-to-regexp": "^6.2.0",
+    "pg": "^8.7.1",
+    "supertest": "^6.1.6",
+    "uuid": "^8.3.2",
+    "validate.js": "^0.13.1"
+  }
+}
