@@ -1,4 +1,5 @@
 node_modules/
+upgrade-nobejs/
 .env
 .DS_Store
 .git
