@@ -1,10 +1,5 @@
 var nJwt = require("njwt");
 var uuid = require("uuid");
-// const { validate, version } = require("uuid");
-
-// function uuidValidateV4(uuid) {
-//   return validate(uuid) && version(uuid) === 4;
-// }
 
 const generateToken = (sub = uuid.v4()) => {
   var claims = {

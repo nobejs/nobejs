@@ -17,14 +17,14 @@ module.exports = (req, reply, next) => {
 
   if (needsAuth) {
     if (!req.headers.authorization) {
-      return reply.code(403).send({ error: "Unauthorized" });
+      return reply.code(401).send({ error: "Unauthenticated" });
     }
     const bearer = req.headers.authorization.split(" ");
     const bearerToken = bearer[1];
     req.token = bearerToken;
     let decoded = jwt_decode(req.token);
     if (!decoded.sub) {
-      return reply.code(403).send({ error: "Unauthorized User" });
+      return reply.code(401).send({ error: "Unauthenticated" });
     }
     req.user = decoded.sub;
   }

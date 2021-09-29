@@ -5,7 +5,8 @@
   "author": "Rajiv Seelam",
   "license": "MIT",
   "scripts": {
-    "gen:user": "node ./core/utils/randomUser",
+    "nobe:genuser": "node ./core/utils/randomUser",
+    "nobe:version": "node ./core/version",
     "test": "jest --runInBand",
     "serve": "ENVFILE=.env DEBUG=true nodemon server.js",
     "nobe:update": "node ./update",
