@@ -1,13 +1,33 @@
-describe("test userCanCreateCategory Story", () => {
-  beforeAll(async () => {});
-
-  it("create category for a user", async () => {
-    console.log(testStrategy);
+describe("test exampleStory", () => {
+  it("sum of 1 and 2 is 3", async () => {
+    let result = {};
     try {
-      await testStrategy("canCreateATeam");
+      result = await testStrategy("exampleStory", {
+        prepareResult: {
+          a: 1,
+          b: 2,
+        },
+      });
     } catch (error) {
       console.log(error);
     }
-    expect(1).toBe(1);
+    const { respondResult } = result;
+    expect(respondResult.sum).toBe(3);
+  });
+
+  it("sum of 1 and 2 is not 4", async () => {
+    let result = {};
+    try {
+      result = await testStrategy("exampleStory", {
+        prepareResult: {
+          a: 1,
+          b: 2,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    const { respondResult } = result;
+    expect(respondResult.sum).not.toBe(4);
   });
 });

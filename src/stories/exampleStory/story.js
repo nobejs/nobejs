@@ -1,19 +1,27 @@
-const prepare = (p1) => {
-  //   console.log("prepare", p1);
+const prepare = ({ reqQuery }) => {
+  return {
+    a: parseInt(reqQuery.a),
+    b: parseInt(reqQuery.b),
+  };
 };
 
-const authorize = (p1) => {
-  return "rajiv";
+const authorize = ({ req }) => {
+  if (req.user === "71360e7b-c876-494b-9e0b-d75f1e306995") {
+    throw {
+      statusCode: 401,
+      message: "Unauthorized",
+    };
+  }
+
+  return true;
 };
 
-const handle = (context) => {
-  //   console.log("handle", context);
-  return { status: "ok" };
+const handle = ({ prepareResult }) => {
+  return { sum: prepareResult.a + prepareResult.b };
 };
 
-const respond = (context) => {
-  //   console.log("respond", context);
-  return { status: "respond" };
+const respond = ({ handleResult }) => {
+  return handleResult;
 };
 
 module.exports = {

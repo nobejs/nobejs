@@ -19,7 +19,7 @@ module.exports = (sequence) => {
 
     try {
       for (const ord of sequence) {
-        executionContext[ord] = await storyContext[ord].apply(null, [
+        executionContext[`${ord}Result`] = await storyContext[ord].apply(null, [
           executionContext,
         ]);
       }
