@@ -6,8 +6,8 @@ if (process.env.ENVFILE) {
 const executeStrategy = require("./core/executeStrategy");
 
 global.endpointStrategy = executeStrategy([
-  "prepare",
   "authorize",
+  "prepare",
   "handle",
   "respond",
 ]);
@@ -35,6 +35,6 @@ module.exports = () => {
     validator: "./core/validator",
     endpoints: "./src/endpoints",
     excludeFromAuth: ["GET /"],
-    responseKey: "respond",
+    responseKey: "respondResult",
   };
 };
