@@ -43,7 +43,7 @@ async function migrateTestDatabase() {
 
   try {
     await knex.raw(`create extension if not exists "uuid-ossp"`);
-    let migrationResult = await knex.migrate.latest();
+    await knex.migrate.latest();
   } catch (error) {
     throw new Error(error);
   } finally {

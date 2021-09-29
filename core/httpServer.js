@@ -15,9 +15,3 @@ function build(opts = {}) {
 }
 
 module.exports = build;
-
-// module.exports = async (port) => {
-//   const fastify = await build();
-//   fastify.listen(port);
-//   return fastify;
-// };

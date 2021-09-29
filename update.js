@@ -1,7 +1,9 @@
+require("../config");
 const fs = require("fs-extra");
 const url = require("url");
 const path = require("path");
 const https = require("https");
+const httpsRequestPromise = requireUtil("httpsRequestPromise");
 var extractZip = require("extract-zip");
 
 const releaseOptions = {
@@ -13,29 +15,6 @@ const releaseOptions = {
     "Content-Type": "application/json",
     "User-Agent": "request",
   },
-};
-
-const httpsRequestPromise = (options) => {
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, (res) => {
-      res.setEncoding("utf8");
-      let responseBody = "";
-
-      res.on("data", (chunk) => {
-        responseBody += chunk;
-      });
-
-      res.on("end", () => {
-        resolve(JSON.parse(responseBody));
-      });
-    });
-
-    req.on("error", (err) => {
-      reject(err);
-    });
-
-    req.end();
-  });
 };
 
 const updateRelease = (options) => {
