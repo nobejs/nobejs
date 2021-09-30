@@ -5,8 +5,8 @@ const prepare = ({ reqQuery }) => {
   };
 };
 
-const authorize = ({ req }) => {
-  if (req.user === "71360e7b-c876-494b-9e0b-d75f1e306995") {
+const authorize = ({ prepareResult }) => {
+  if (prepareResult.user === "71360e7b-c876-494b-9e0b-d75f1e306995") {
     throw {
       statusCode: 401,
       message: "Unauthorized",
