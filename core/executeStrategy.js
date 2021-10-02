@@ -23,6 +23,12 @@ module.exports = (sequence) => {
 
       try {
         for (const ord of sequence) {
+          if (ord.charAt(0) === "*") {
+            if (!context[ord]) {
+              continue;
+            }
+          }
+
           executionContext[`${ord}Result`] = await context[ord].apply(null, [
             executionContext,
           ]);
