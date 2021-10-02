@@ -16,7 +16,7 @@ const authorize = ({ prepareResult }) => {
   return true;
 };
 
-const handle = ({ prepareResult }) => {
+const handle = ({ prepareResult, storyName }) => {
   return { sum: prepareResult.a + prepareResult.b };
 };
 

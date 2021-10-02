@@ -6,7 +6,7 @@ describe("test exampleStory", () => {
         prepareResult: {
           a: 1,
           b: 2,
-          user: "71360e7b-c876-494b-9e0b-d75f1e306995",
+          user: "71360e7b-c876-494b-9e0b-d75f1e306994",
         },
       });
     } catch (error) {
@@ -23,7 +23,7 @@ describe("test exampleStory", () => {
         prepareResult: {
           a: 1,
           b: 2,
-          user: "71360e7b-c876-494b-9e0b-d75f1e306995",
+          user: "71360e7b-c876-494b-9e0b-d75f1e306994",
         },
       });
     } catch (error) {
