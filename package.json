@@ -5,6 +5,7 @@
   "author": "Rajiv Seelam",
   "license": "MIT",
   "scripts": {
+    "nobe:genstory": "node ./core/utils/generateStory",
     "nobe:genuser": "node ./core/utils/randomUser",
     "nobe:version": "node ./core/version",
     "test": "jest --runInBand",
