@@ -89,20 +89,19 @@ const updateRelease = (options) => {
               } catch (err) {
                 fs.rmdirSync("core", { recursive: true });
                 fs.moveSync(path.resolve(`core_bk`), path.resolve(`core`));
-
                 console.log("err", err);
               }
             });
           })
-          .on("error", () => {});
+          .on("error", () => {
+            console.log("err", err);
+          });
       })
       .on("error", (error) => {
-        console.log("Go crazy", error);
+        console.log("err", err);
       });
   });
 };
-
-fs.rmdirSync("upgrade", { recursive: true });
 
 (async () => {
   try {
