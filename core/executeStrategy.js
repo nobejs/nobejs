@@ -22,8 +22,9 @@ module.exports = (sequence) => {
       );
 
       try {
-        for (const ord of sequence) {
+        for (let ord of sequence) {
           if (ord.charAt(0) === "*") {
+            ord = ord.substring(1);
             if (!context[ord]) {
               continue;
             }
