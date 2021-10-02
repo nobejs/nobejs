@@ -13,7 +13,8 @@ const httpsRequestPromise = requireUtil("httpsRequestPromise");
     },
   };
 
-  console.log("Version: 0.0.7");
+  console.log("Version: 0.0.8");
+  console.log("Make sure you created a file called global.js, which is introduced in this release");
 
   try {
     let response = await httpsRequestPromise(releaseOptions);
