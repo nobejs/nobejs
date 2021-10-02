@@ -5,11 +5,12 @@
   "author": "Rajiv Seelam",
   "license": "MIT",
   "scripts": {
+    "nobe:genstory": "node ./core/utils/generateStory",
     "nobe:genuser": "node ./core/utils/randomUser",
     "nobe:version": "node ./core/version",
     "test": "jest --runInBand",
     "serve": "ENVFILE=.env DEBUG=true nodemon server.js",
-    "nobe:update": "node ./update",
+    "nobe:update": "node ./update && yarn nobe:version",
     "db": "knex",
     "db:migrate": "knex migrate:latest",
     "db:rollback": "knex migrate:rollback",

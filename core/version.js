@@ -13,8 +13,8 @@ const httpsRequestPromise = requireUtil("httpsRequestPromise");
     },
   };
 
-  console.log("Version: 0.0.8");
-  console.log("Make sure you created a file called global.js, which is introduced in this release");
+  console.log("Version: 0.0.9");
+  console.log("Introduce genstory command, copy from package.json");
 
   try {
     let response = await httpsRequestPromise(releaseOptions);
