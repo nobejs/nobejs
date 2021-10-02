@@ -12,7 +12,12 @@ global.endpointStrategy = executeStrategy([
   "respond",
 ]);
 
-global.testStrategy = executeStrategy(["authorize", "handle", "respond"]);
+global.testStrategy = executeStrategy([
+  "callEverytime",
+  "authorize",
+  "handle",
+  "respond",
+]);
 
 global.requireStory = (name) => require(`./src/stories/${name}/story.js`);
 global.requireUtil = (name) => require(`./core/utils/${name}`);
@@ -21,6 +26,7 @@ global.requireHelper = (name) => require(`./src/helpers/${name}`);
 global.requireSerializer = (name) => require(`./src/serializers/${name}`);
 global.requireValidator = () => require(`./core/validator`);
 global.requireHttpServer = () => require(`./core/httpServer`);
+global.requireGlobal = () => require(`./global.js`);
 
 module.exports = () => {
   return {
