@@ -1,4 +1,4 @@
-require("../config");
+require("./config");
 const fs = require("fs-extra");
 const url = require("url");
 const path = require("path");
