@@ -10,7 +10,7 @@ module.exports = (req, reply, next) => {
   exclude.forEach((p) => {
     let [method, path] = p.split(" ");
     let regex = pathToRegexp(path);
-    if (method == req.method && regex.exec(req.url) !== null) {
+    if (method == req.method && regex.exec(req.routerPath) !== null) {
       needsAuth = false;
     }
   });
