@@ -3,3 +3,4 @@ upgrade-nobejs/
 .env
 .DS_Store
 .git
+.env.jest
