@@ -13,7 +13,8 @@ const httpsRequestPromise = requireUtil("httpsRequestPromise");
     },
   };
 
-  console.log("Version: 0.0.15");
+  console.log("Version: 0.0.16");
+  console.log("Release Notes: 0.0.15");
   console.log(
     "As part of 0.0.15, We added a dockerfile, and you want to compare server.js file for a critical change."
   );
