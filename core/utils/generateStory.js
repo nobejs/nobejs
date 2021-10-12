@@ -18,14 +18,17 @@ const generateStory = (title, folder = "") => {
   console.log("Creating story in:", storyFolder);
 
   if (!fs.existsSync(storyFolder)) {
-    fs.copySync(path.resolve(`core/SampleStory`), storyFolder);
+    fs.copySync(path.resolve(`core/StoryTemplate`), storyFolder);
 
     let testFileContents = fs.readFileSync(
       `${storyFolder}/tests.spec.js`,
       "utf8"
     );
 
-    testFileContents = testFileContents.replace(/SampleStory/g, camelCaseStory);
+    testFileContents = testFileContents.replace(
+      /StoryTemplate/g,
+      camelCaseStory
+    );
 
     fs.writeFile(`${storyFolder}/tests.spec.js`, testFileContents);
 
@@ -35,7 +38,7 @@ const generateStory = (title, folder = "") => {
     );
 
     endpointFileContents = endpointFileContents.replace(
-      /SampleStory/g,
+      /StoryTemplate/g,
       camelCaseStory
     );
 
