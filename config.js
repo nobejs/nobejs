@@ -27,6 +27,10 @@ global.requireSerializer = (name) => require(`./src/serializers/${name}`);
 global.requireValidator = () => require(`./core/validator`);
 global.requireHttpServer = () => require(`./core/httpServer`);
 global.requireGlobal = () => require(`./global.js`);
+global.requireKnex = () => require(`./database/knex.js`);
+
+global.requireTestFunction = (name) => require(`./src/functions/tests/${name}`);
+global.requireFunction = (name) => require(`./src/functions/${name}`);
 
 module.exports = () => {
   return {

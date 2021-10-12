@@ -11,9 +11,9 @@ function camelize(str) {
   return upperCase;
 }
 
-const generateStory = (title, folder = "") => {
+const generateStory = (title) => {
   const camelCaseStory = camelize(title);
-  const storyFolder = path.resolve(`src/stories/${folder}/${camelCaseStory}`);
+  const storyFolder = path.resolve(`src/stories/${camelCaseStory}`);
 
   console.log("Creating story in:", storyFolder);
 
@@ -48,4 +48,4 @@ const generateStory = (title, folder = "") => {
   }
 };
 
-module.exports = generateStory(process.argv[2], process.argv[3]);
+module.exports = generateStory(process.argv[2]);
