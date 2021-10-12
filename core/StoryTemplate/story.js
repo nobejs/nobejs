@@ -18,7 +18,7 @@ const handle = ({ prepareResult, storyName }) => {
 };
 
 const respond = ({ handleResult }) => {
-  return {};
+  return handleResult;
 };
 
 module.exports = {
