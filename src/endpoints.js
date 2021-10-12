@@ -9,7 +9,7 @@ module.exports = (app) => {
 
   return [
     {
-      endpoints: [["get", "/", "exampleStory"]],
+      endpoints: [],
     },
   ];
 };

@@ -1,10 +1,10 @@
 const debugLogger = requireUtil("debugLogger");
 
-describe("test sampleStory", () => {
+describe("Test Handler SampleStory", () => {
   it("an user can", async () => {
     let result = {};
     try {
-      result = await testStrategy("sampleStory", {
+      result = await testStrategy("SampleStory", {
         prepareResult: {},
       });
     } catch (error) {
