@@ -12,12 +12,7 @@ global.endpointStrategy = executeStrategy([
   "respond",
 ]);
 
-global.testStrategy = executeStrategy([
-  "callEverytime",
-  "authorize",
-  "handle",
-  "respond",
-]);
+global.testStrategy = executeStrategy(["authorize", "handle", "respond"]);
 
 global.requireStory = (name) => require(`./src/stories/${name}/story.js`);
 global.requireUtil = (name) => require(`./core/utils/${name}`);
