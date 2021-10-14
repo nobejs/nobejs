@@ -1,7 +1,8 @@
 require("./config");
 
 module.exports = {
-  client: "postgresql",
+  client: "pg",
+  debug: false,
   connection: {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
