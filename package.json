@@ -15,7 +15,10 @@
     "db": "knex",
     "db:migrate": "ENVFILE=.env knex migrate:latest",
     "db:rollback": "ENVFILE=.env knex migrate:rollback",
-    "db:migration": "ENVFILE=.env knex migrate:make"
+    "db:migration": "ENVFILE=.env knex migrate:make",
+    "release": "gh release create",
+    "bump": "npm version patch",
+    "bump:minor": "npm version minor"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
