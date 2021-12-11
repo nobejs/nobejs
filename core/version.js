@@ -13,7 +13,7 @@ const httpsRequestPromise = requireUtil("httpsRequestPromise");
     },
   };
 
-  console.log("Version: v0.1.0");
+  console.log("Version: v0.1.2");
 
   try {
     let response = await httpsRequestPromise(releaseOptions);
