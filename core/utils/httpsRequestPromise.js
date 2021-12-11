@@ -11,7 +11,11 @@ module.exports = (options) => {
       });
 
       res.on("end", () => {
-        resolve(JSON.parse(responseBody));
+        if (res.statusCode >= 200 && res.statusCode <= 300) {
+          resolve(JSON.parse(responseBody));
+        } else {
+          reject({ ...JSON.parse(responseBody), statusCode: res.statusCode });
+        }
       });
     });
 
