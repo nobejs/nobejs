@@ -12,6 +12,8 @@ global.endpointStrategy = executeStrategy([
   "respond",
 ]);
 
+global.queueJobStrategy = executeStrategy(["prepare", "authorize", "handle"]);
+
 global.testStrategy = executeStrategy(["authorize", "handle", "respond"]);
 
 global.requireStory = (name) => require(`./src/stories/${name}/story.js`);
