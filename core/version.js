@@ -1,5 +1,7 @@
 require("../config");
 const httpsRequestPromise = requireUtil("httpsRequestPromise");
+const fs = require("fs-extra");
+const path = require("path");
 
 (async () => {
   const releaseOptions = {
@@ -13,7 +15,11 @@ const httpsRequestPromise = requireUtil("httpsRequestPromise");
     },
   };
 
-  console.log("Version: v0.1.4");
+  const packageJsonFilePath = path.resolve(`package.json`);
+
+  let packageFileContents = fs.readFileSync(packageJsonFilePath, "utf8");
+
+  console.log("Current Version: ", JSON.parse(packageFileContents)["version"]);
 
   try {
     let response = await httpsRequestPromise(releaseOptions);
