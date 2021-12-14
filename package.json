@@ -17,7 +17,7 @@
     "db:rollback": "ENVFILE=.env knex migrate:rollback",
     "db:migration": "ENVFILE=.env knex migrate:make",
     "release": "gh release create",
-    "bump": "npm version patch && node core/syncVersion.js",
+    "bump": "npm version patch && node core/syncVersion.js && git commit -am 'Commit version.md' && gpp",
     "bump:minor": "npm version minor"
   },
   "devDependencies": {
