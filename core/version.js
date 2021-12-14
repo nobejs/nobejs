@@ -15,11 +15,11 @@ const path = require("path");
     },
   };
 
-  const packageJsonFilePath = path.resolve(`package.json`);
+  const versionMdFile = path.resolve(`core/VERSION.md`);
 
-  let packageFileContents = fs.readFileSync(packageJsonFilePath, "utf8");
+  let versionMdContents = fs.readFileSync(versionMdFile, "utf8");
 
-  console.log("Current Version: ", JSON.parse(packageFileContents)["version"]);
+  console.log("Current Version: ", versionMdContents);
 
   try {
     let response = await httpsRequestPromise(releaseOptions);
