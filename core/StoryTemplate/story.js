@@ -23,7 +23,6 @@ const handle = async ({ prepareResult, authorizeResult }) => {
   } catch (error) {
     throw error;
   }
-
 };
 
 const respond = async ({ handleResult }) => {
