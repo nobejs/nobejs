@@ -1,4 +1,5 @@
 const debugLogger = requireUtil("debugLogger");
+const knex = requireKnex();
 
 describe("Test Handler StoryTemplate", () => {
   it("dummy_story_which_will_pass", async () => {

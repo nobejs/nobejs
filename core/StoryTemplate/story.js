@@ -2,15 +2,19 @@ const prepare = ({ reqQuery, reqBody, reqParams }) => {
   return {};
 };
 
-const authorize = ({ prepareResult }) => {
-  if (0) {
-    throw {
-      statusCode: 401,
-      message: "Unauthorized",
-    };
-  }
+const authorize = async ({ prepareResult }) => {
+  try {
+    if (0) {
+      throw {
+        statusCode: 401,
+        message: "Unauthorized",
+      };
+    }
 
-  return true;
+    return true;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const handle = ({ prepareResult, storyName }) => {
