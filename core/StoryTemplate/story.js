@@ -1,4 +1,4 @@
-const prepare = ({ reqQuery, reqBody, reqParams }) => {
+const prepare = ({ reqQuery, reqBody, reqParams, req }) => {
   return {};
 };
 
@@ -17,12 +17,21 @@ const authorize = async ({ prepareResult }) => {
   }
 };
 
-const handle = ({ prepareResult, storyName }) => {
-  return {};
+const handle = async ({ prepareResult, authorizeResult }) => {
+  try {
+    return {};
+  } catch (error) {
+    throw error;
+  }
+
 };
 
-const respond = ({ handleResult }) => {
-  return handleResult;
+const respond = async ({ handleResult }) => {
+  try {
+    return handleResult;
+  } catch (error) {
+    throw error;
+  }
 };
 
 module.exports = {
