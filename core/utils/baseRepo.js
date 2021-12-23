@@ -55,9 +55,20 @@ const remove = async (table, where, mode = "soft") => {
 const first = async (table, where = {}) => {
   try {
     let row = await knex(table).where(where).whereNull("deleted_at").first();
+
+    if (row === undefined) {
+      throw {
+        statusCode: 404,
+        message: "Not Found",
+      };
+    }
+
     return row;
   } catch (error) {
-    throw error;
+    throw {
+      statusCode: 404,
+      message: "Not Found",
+    };
   }
 };
 
