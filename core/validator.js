@@ -8,15 +8,18 @@ validate.validators.custom_callback = function (
   constraints
 ) {
   return new validate.Promise(async function (resolve, reject) {
-    let result = await options["callback"].apply(null, [
-      constraints["payload"],
-    ]);
+    try {
+      let result = await options["callback"].apply(null, [
+        constraints["payload"],
+      ]);
 
-    if (result === true) {
-      return resolve();
+      if (result === true) {
+        return resolve();
+      }
+      return resolve("^" + options["message"]);
+    } catch (error) {
+      resolve("^" + options["message"]);
     }
-
-    return resolve("^" + options["message"]);
   });
 };
 
