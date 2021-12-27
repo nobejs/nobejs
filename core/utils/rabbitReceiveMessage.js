@@ -13,10 +13,13 @@ const rabbitReceiveMessage = async (amqp_endpoint, q, storyName) => {
             job: JSON.parse(msg.content.toString()),
           });
           await ch.ack(msg);
-        } catch (error) {}
+        } catch (error) {
+          throw error;
+        }
       }
     });
   } catch (error) {
+    throw error;
   } finally {
   }
 };
