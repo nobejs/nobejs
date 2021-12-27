@@ -86,7 +86,7 @@ const countAll = async (table, where = {}, whereNot = {}) => {
   }
 };
 
-const findAll = async (table, where = {}, columns) => {
+const findAll = async (table, where = {}, columns = "*") => {
   try {
     let rows = await knex(table)
       .where(where)
