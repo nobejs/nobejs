@@ -22,7 +22,11 @@ const create = async (table, payload) => {
 const update = async (table, where, payload) => {
   try {
     payload["updated_at"] = new Date().toISOString();
-    let rows = await knex(table).where(where).update(payload).returning("*");
+    let rows = await knex(table)
+      .where(where)
+      .whereNull("deleted_at")
+      .update(payload)
+      .returning("*");
     return rows[0];
   } catch (error) {
     throw error;
