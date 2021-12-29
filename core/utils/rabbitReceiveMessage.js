@@ -14,7 +14,9 @@ const rabbitReceiveMessage = async (amqp_endpoint, q, storyName) => {
           });
           await ch.ack(msg);
         } catch (error) {
-          throw error;
+          if (error.ack) {
+            await ch.ack(msg);
+          }
         }
       }
     });
