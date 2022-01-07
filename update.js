@@ -19,7 +19,7 @@ const releaseOptions = {
 
 const updateRelease = (options) => {
   if (fs.existsSync("upgrade-nobejs")) {
-    fs.rmSync("upgrade-nobejs", { recursive: true });
+    fs.unlinkSync("upgrade-nobejs", { recursive: true });
   }
 
   if (!fs.existsSync("upgrade-nobejs")) {
@@ -96,10 +96,10 @@ const updateRelease = (options) => {
 
                 console.log("Self Update the update script");
 
-                fs.rmSync("upgrade-nobejs", { recursive: true });
-                fs.rmSync("core_bk", { recursive: true });
+                fs.unlinkSync("upgrade-nobejs", { recursive: true });
+                fs.unlinkSync("core_bk", { recursive: true });
               } catch (err) {
-                fs.rmSync("core", { recursive: true });
+                fs.unlinkSync("core", { recursive: true });
                 fs.moveSync(path.resolve(`core_bk`), path.resolve(`core`));
 
                 console.log("err", err);
