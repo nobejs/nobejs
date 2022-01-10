@@ -24,6 +24,8 @@
     "nodemon": "^2.0.13"
   },
   "dependencies": {
+    "@sentry/node": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
     "dotenv": "^10.0.0",
     "extract-zip": "^2.0.1",
     "fastify": "^3.21.6",
