@@ -5,6 +5,7 @@ const path = require("path");
 const https = require("https");
 const httpsRequestPromise = requireUtil("httpsRequestPromise");
 var extractZip = require("extract-zip");
+const localRmSync = fs.rmSync === undefined ? fs.unlinkSync : fs.rmSync;
 
 const releaseOptions = {
   hostname: "api.github.com",
@@ -19,7 +20,7 @@ const releaseOptions = {
 
 const updateRelease = (options) => {
   if (fs.existsSync("upgrade-nobejs")) {
-    fs.unlinkSync("upgrade-nobejs", { recursive: true });
+    localRmSync("upgrade-nobejs", { recursive: true });
   }
 
   if (!fs.existsSync("upgrade-nobejs")) {
@@ -96,10 +97,10 @@ const updateRelease = (options) => {
 
                 console.log("Self Update the update script");
 
-                fs.unlinkSync("upgrade-nobejs", { recursive: true });
-                fs.unlinkSync("core_bk", { recursive: true });
+                localRmSync("upgrade-nobejs", { recursive: true });
+                localRmSync("core_bk", { recursive: true });
               } catch (err) {
-                fs.unlinkSync("core", { recursive: true });
+                localRmSync("core", { recursive: true });
                 fs.moveSync(path.resolve(`core_bk`), path.resolve(`core`));
 
                 console.log("err", err);
