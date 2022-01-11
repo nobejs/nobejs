@@ -17,7 +17,7 @@ const rabbitReceiveMessage = async (amqp_endpoint, q, storyName) => {
           await ch.ack(msg);
         } catch (error) {
           if (process.env.SENTRY_DSN !== "" && process.env.DEBUG !== "true") {
-            Sentry.captureException(err);
+            Sentry.captureException(error);
           }
 
           if (process.env.DEBUG === "true") {
