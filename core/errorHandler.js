@@ -8,6 +8,10 @@ if (process.env.SENTRY_DSN !== "") {
   });
 }
 
+if (process.env.APP_NAME !== "") {
+  Sentry.setTag("app-name", process.env.APP_NAME);
+}
+
 module.exports = (err, req, res) => {
   if (err.statusCode) {
     let statusCode = err.statusCode;
