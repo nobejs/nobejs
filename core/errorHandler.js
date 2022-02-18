@@ -8,7 +8,7 @@ if (process.env.SENTRY_DSN !== "") {
   });
 }
 
-if (process.env.APP_NAME !=="") {
+if (process.env.APP_NAME !== "") {
   Sentry.setTag("app-name", process.env.APP_NAME);
 }
 
