@@ -37,11 +37,13 @@ module.exports = () => {
     httpServer: "./core/httpServer",
     errorHandler: "./core/errorHandler",
     notFoundHandler: "./core/notFoundHandler",
+    corsMiddleware: "./core/corsMiddleware",
     authMiddleware: "./core/authMiddleware",
     loadEndpoints: "./core/loadEndpoints",
     validator: "./core/validator",
     endpoints: "./src/endpoints",
     excludeFromAuth: ["GET /liveness", "POST /readiness"],
     responseKey: "respondResult",
+    enableCORS: true,
   };
 };
