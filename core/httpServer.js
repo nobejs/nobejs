@@ -4,11 +4,16 @@ const errorHandler = Config.load(Config["errorHandler"]);
 const notFoundHandler = Config.load(Config["notFoundHandler"]);
 const authMiddleware = Config.load(Config["authMiddleware"]);
 const loadEndpoints = Config.load(Config["loadEndpoints"]);
+const corsMiddleware = Config.load(Config["corsMiddleware"]);
+const enableCors = Config.load(Config["enableCORS"]);
 
 function build(opts = {}) {
   const app = fastify(opts);
   app.setErrorHandler(errorHandler);
   app.setNotFoundHandler(notFoundHandler);
+  if (enableCors) {
+    app.addHook("onRequest", corsMiddleware);
+  }
   app.addHook("onRequest", authMiddleware);
   loadEndpoints(app);
   return app;
