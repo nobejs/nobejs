@@ -1,8 +1,5 @@
 module.exports = (request, reply, next) => {
   try {
-    console.log("request.url", request.url, request.method);
-    console.log("request.headers.origin", request.headers.origin);
-
     if (request.headers.origin) {
       reply.header("Access-Control-Allow-Origin", request.headers.origin);
     }
