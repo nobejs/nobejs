@@ -5,7 +5,7 @@ const notFoundHandler = Config.load(Config["notFoundHandler"]);
 const authMiddleware = Config.load(Config["authMiddleware"]);
 const loadEndpoints = Config.load(Config["loadEndpoints"]);
 const corsMiddleware = Config.load(Config["corsMiddleware"]);
-const enableCors = Config.load(Config["enableCORS"]);
+const enableCors = Config["enableCors"];
 
 function build(opts = {}) {
   const app = fastify(opts);
