@@ -71,10 +71,7 @@ const remove = async (table, where, mode = "soft") => {
     }
 
     if (mode === "hard") {
-      let rows = await knex(table)
-        .where(where)
-        .whereNull("deleted_at")
-        .delete();
+      let rows = await knex(table).where(where).delete();
       return rows;
     }
   } catch (error) {
