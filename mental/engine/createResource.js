@@ -29,6 +29,8 @@ const createResource = async (resourceModels, resource, payload) => {
     resourceModels
   );
 
+  // Engine shoould generation db operations to run, and should leave framework to implement those dbOps it's own way
+
   // console.log("dbOps", dbOps);
 
   let result = await knex.transaction(async (trx) => {
