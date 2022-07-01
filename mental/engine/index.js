@@ -5,7 +5,10 @@ const knex = requireKnex();
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 const baseRepo = requireUtil("baseRepo");
 
-const customValidators = {};
+const customFunctions = {};
+const resourceModels = {};
+
+// mental.createPosts
 
 // mental.createResource("type",data);
 // mental.updateResource("type", identifier, data)
@@ -62,9 +65,9 @@ const run = async () => {
 
   const payload = pickKeysFromObject(request, columns);
 
-  console.log("customValidators", customValidators);
+  console.log("customFunctions", customFunctions);
 
-  customValidators["uniqueForAuthor"](payload);
+  customFunctions["uniqueForAuthor"](payload);
 
   // Create Post
 
@@ -76,13 +79,92 @@ const run = async () => {
   // console.log("called engine", post);
 };
 
-const addValidator = (name, validator) => {
-  customValidators[name] = validator;
+const addFunction = (name, validator) => {
+  customFunctions[name] = validator;
+};
+
+const executeViaApi = async (operation, { req, res, next }) => {
+  return {
+    operation,
+  };
+};
+
+const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
+const routes = () => {
+  const resources = Object.keys(resourceModels);
+  const apiEndpoints = [];
+
+  let crudPaths = [
+    { method: "get", path: "/$resources", operation: "get$resources" },
+    { method: "post", path: "/$resources", operation: "create$resource" },
+    { method: "get", path: "/$resources/:uuid", operation: "get$resource" },
+    { method: "put", path: "/$resources/:uuid", operation: "update$resource" },
+    {
+      method: "patch",
+      path: "/$resources/:uuid",
+      operation: "patch$resource",
+    },
+    {
+      method: "delete",
+      path: "/$resources/:uuid",
+      operation: "delete$resource",
+    },
+  ];
+
+  for (
+    let resourceCounter = 0;
+    resourceCounter < resources.length;
+    resourceCounter++
+  ) {
+    const resource = resources[resourceCounter];
+
+    for (
+      let crudPathCounter = 0;
+      crudPathCounter < crudPaths.length;
+      crudPathCounter++
+    ) {
+      const crudPath = crudPaths[crudPathCounter];
+
+      apiEndpoints.push({
+        method: crudPath.method,
+        path: crudPath.path.replace("$resource", resource),
+        operation: crudPath.operation.replace(
+          "$resource",
+          capitalize(resource)
+        ),
+      });
+
+      // console.log("resource", resource, crudPath);
+    }
+  }
+
+  console.log("apiEndpoints", apiEndpoints);
+
+  return apiEndpoints;
+};
+
+const init = () => {
+  const resourcesPath = path.resolve(`mental/resources`);
+  let resources = fs.readdirSync(resourcesPath);
+
+  resources.forEach((resource) => {
+    const resourcePath = path.resolve(`mental/resources/${resource}`);
+    let resourceData = JSON.parse(fs.readFileSync(resourcePath, "utf-8"));
+
+    if (resourceData.name) {
+      resourceModels[resourceData.name] = resourceData;
+    }
+  });
+  // Also check if any resource names are duplicated
 };
 
 module.exports = {
+  init,
+  executeViaApi,
+  routes,
   run,
-  addValidator,
+  addFunction,
 };
 
 // (async () => {

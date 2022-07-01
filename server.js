@@ -2,10 +2,12 @@ const Config = require("./config")();
 const httpServer = requireHttpServer();
 const mentalEngine = require("./mental/engine");
 
-mentalEngine.addValidator("uniqueForAuthor", (payload) => {
+mentalEngine.addFunction("uniqueForAuthor", (payload) => {
   console.log("I am custom validator", payload);
   return true;
 });
+
+mentalEngine.init();
 
 const server = httpServer({});
 

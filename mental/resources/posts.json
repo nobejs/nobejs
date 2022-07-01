@@ -1,5 +1,5 @@
 {
-  "name": "posts",
+  "name": "post",
   "sql_table": "posts",
   "label": "Posts",
   "attributes": [
@@ -36,5 +36,8 @@
       "label": "Body",
       "type": "editor"
     }
-  ]
+  ],
+  "hooks": {
+    "afterCreate": "createCamsRequest"
+  }
 }
