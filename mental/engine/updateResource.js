@@ -53,7 +53,7 @@ const updateResource = async (resourceModels, resourceSpec, payload) => {
           pivotPayload = {};
           pivotPayload[dbOp.source_column] = mainResource.uuid;
           pivotPayload[dbOp.relations_column] =
-            createdResource[dbOp["primaryKey"]];
+            createdResource[dbOp["relationsPrimaryKey"]];
           await trx(dbOp.pivot_table).insert(pivotPayload).returning("*");
           break;
 

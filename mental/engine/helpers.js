@@ -1,4 +1,5 @@
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
+const findKeysFromRequest = requireUtil("findKeysFromRequest");
 
 const getColumnsFromAttributes = (resourceSpec) => {
   let columns = resourceSpec.attributes
@@ -78,68 +79,86 @@ const augmentWithManyToMany = (
 ) => {
   const dbOps = [];
 
-  let manyToManyRelations = attributes.filter((c) => {
+  // Find many to many relations for this resource
+  let relations = attributes.filter((c) => {
     return c.type === "relation" && c.relation === "manyToMany";
   });
 
-  for (
-    let manyToManyCounter = 0;
-    manyToManyCounter < manyToManyRelations.length;
-    manyToManyCounter++
-  ) {
-    const manyToManyRelation = manyToManyRelations[manyToManyCounter];
-    let payloadRelations = payload[manyToManyRelation.name];
+  // Loop through each many to many relations
+  for (let counter = 0; counter < relations.length; counter++) {
+    let relation = relations[counter];
+    // Find if there is a property if with this relation name
+    let payloadsForRelation = payload[relation.name];
 
-    const primaryKey = findPrimaryKey(
-      resourceModels[manyToManyRelation.resource]
-    );
+    if (payloadsForRelation && payloadsForRelation.length > 0) {
+      let resourceSpecForRelation = resourceModels[relation.resource];
+      let primaryKey = findPrimaryKey(resourceSpecForRelation);
 
-    for (
-      let payloadRelationCounter = 0;
-      payloadRelationCounter < payloadRelations.length;
-      payloadRelationCounter++
-    ) {
-      let payloadRelation = payloadRelations[payloadRelationCounter];
-      payloadRelation = mapObjectToResource(
-        payloadRelation,
-        resourceModels[manyToManyRelation.resource]
-      );
+      // Because this is a many to many relations, expected is an array of objects
 
-      payloadRelations[payloadRelationCounter] = payloadRelation;
+      for (
+        let payloadCounter = 0;
+        payloadCounter < payloadsForRelation.length;
+        payloadCounter++
+      ) {
+        let payloadRelation = payloadsForRelation[payloadCounter];
+        payloadRelation = mapObjectToResource(
+          payloadRelation,
+          resourceSpecForRelation
+        );
 
-      dbOps.push({
-        pivot_table: manyToManyRelation["pivot_table"],
-        operation: "truncate",
-        source_column: manyToManyRelation["source_column"],
-      });
+        payloadsForRelation[payloadCounter] = payloadRelation;
 
-      if (payloadRelation[primaryKey] === undefined) {
+        // Clean existing relationships, so, frontend should send all the existing relations
+
         dbOps.push({
-          table: resourceModels[manyToManyRelation.resource]["sql_table"],
-          operation: "create_many_to_many_resource",
-          source_column: manyToManyRelation["source_column"],
-          relations_column: manyToManyRelation["relations_column"],
-          payload: payloadRelation,
-          pivot_table: manyToManyRelation["pivot_table"],
-          primaryKey: primaryKey,
+          pivot_table: relation["pivot_table"],
+          operation: "truncate",
+          source_column: relation["source_column"],
         });
-      } else {
-        let opPayload = {};
-        opPayload[manyToManyRelation["relations_column"]] =
-          payloadRelation[primaryKey];
-        dbOps.push({
-          table: manyToManyRelation["pivot_table"],
-          operation: "create_pivot",
-          source_column: manyToManyRelation["source_column"],
-          payload: opPayload,
-        });
+
+        if (payloadRelation[primaryKey] === undefined) {
+          // When an relationship is sent, it's possible, the corresponding resource also should be created
+          // Todo - We should validate this payload
+          dbOps.push({
+            table: resourceModels[relation.resource]["sql_table"],
+            operation: "create_many_to_many_resource",
+            source_column: relation["source_column"],
+            relations_column: relation["relations_column"],
+            payload: payloadRelation,
+            pivot_table: relation["pivot_table"],
+            relationsPrimaryKey: primaryKey,
+          });
+        } else {
+          // The resource already exists, so we only link it
+          let opPayload = {};
+          opPayload[relation["relations_column"]] = payloadRelation[primaryKey];
+          dbOps.push({
+            table: relation["pivot_table"],
+            operation: "create_pivot",
+            source_column: relation["source_column"],
+            payload: opPayload,
+          });
+        }
       }
     }
   }
   return dbOps;
 };
 
+const cleanRequestObject = (resourceModels, resource, req) => {
+  let attributes = resourceModels[resource]["attributes"];
+  let columns = attributes.map((c) => {
+    return `${c.name}`;
+  });
+  columns.push("uuid");
+  columns.push("include");
+  const payload = findKeysFromRequest(req, columns);
+  return payload;
+};
+
 module.exports = {
+  cleanRequestObject,
   mapObjectToResource,
   findPrimaryKey,
   augmentWithBelongsTo,

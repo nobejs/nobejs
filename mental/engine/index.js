@@ -3,13 +3,13 @@ const path = require("path");
 // require("../../config");
 const knex = requireKnex();
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
-const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const baseRepo = requireUtil("baseRepo");
 const validator = requireValidator();
-const { augmentWithBelongsTo, augmentWithManyToMany } = require("./helpers");
+const { augmentWithBelongsTo, cleanRequestObject } = require("./helpers");
 const createResource = require("./createResource");
 const updateResource = require("./updateResource");
 const getResource = require("./getResource");
+const validate = require("./validate");
 const customFunctions = {};
 const resourceModels = {};
 
@@ -23,60 +23,19 @@ const addFunction = (name, validator) => {
   customFunctions[name] = validator;
 };
 
-const validate = async (attributes, payload) => {
-  const constraints = {};
-
-  for (let aCounter = 0; aCounter < attributes.length; aCounter++) {
-    const attribute = attributes[aCounter];
-    if (attribute.validators && attribute.validators.length) {
-      constraints[attribute.name] = {};
-      for (
-        let vCounter = 0;
-        vCounter < attribute.validators.length;
-        vCounter++
-      ) {
-        const validatorType = attribute.validators[vCounter];
-        if (validatorType === "required") {
-          constraints[attribute.name]["presence"] = {
-            allowEmpty: false,
-            message: `^Please enter ${attribute.name}`,
-          };
-        }
-      }
-    }
-  }
-
-  // console.log("constraints", constraints);
-
-  return validator(payload, constraints);
-};
-
 const executeViaApi = async (operation, resource, { req, res, next }) => {
   try {
-    let attributes = resourceModels[resource]["attributes"];
-    let columns = attributes.map((c) => {
-      return `${c.name}`;
-    });
-    columns.push("uuid");
-    columns.push("include");
-
-    const payload = findKeysFromRequest(req, columns);
-
-    console.log("resource", operation);
+    const payload = cleanRequestObject(resourceModels, resource, req);
 
     if (["create_resource", "update_resource"].includes(operation)) {
-      await validate(attributes, payload);
+      await validate(resourceModels, resource, payload);
     }
 
     let result;
 
     switch (operation) {
       case "create_resource":
-        result = await createResource(
-          resourceModels,
-          resourceModels[resource],
-          payload
-        );
+        result = await createResource(resourceModels, resource, payload);
         break;
 
       case "update_resource":
