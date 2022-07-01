@@ -34,27 +34,66 @@ const updateResource = async (resourceSpec, payload) => {
       return `${c.name}`;
     });
 
-  let relations = attributes.filter((c) => {
-    return c.type === "relation";
-  });
+  let dbRecord = pickKeysFromObject(payload, columns);
 
-  const dbRecord = pickKeysFromObject(payload, columns);
+  dbRecord = augmentWithBelongsTo(
+    dbRecord,
+    payload,
+    attributes,
+    resourceModels
+  );
+
+  const dbOps = augmentWithManyToMany(
+    dbRecord,
+    payload,
+    attributes,
+    resourceModels
+  );
 
   let result = await knex.transaction(async (trx) => {
-    await trx(table)
+    const rows = await trx(table)
       .where({
         uuid: payload.uuid,
       })
       .whereNull("deleted_at")
       .update(dbRecord)
       .returning("*");
+    let mainResource = rows[0];
 
-    let mainResource = await trx(table)
-      .where({
-        uuid: payload.uuid,
-      })
-      .whereNull("deleted_at")
-      .first();
+    for (let dbOpsCounter = 0; dbOpsCounter < dbOps.length; dbOpsCounter++) {
+      const dbOp = dbOps[dbOpsCounter];
+
+      let pivotPayload = {};
+
+      switch (dbOp.operation) {
+        case "truncate":
+          pivotPayload[dbOp.source_column] = mainResource.uuid;
+          await knex(dbOp.pivot_table).where(pivotPayload).del();
+          break;
+
+        case "create_many_to_many_resource":
+          let createdResource = await trx(dbOp.table)
+            .insert(dbOp.payload)
+            .returning("*");
+          createdResource = createdResource[0];
+          pivotPayload = {};
+          pivotPayload[dbOp.source_column] = mainResource.uuid;
+          pivotPayload[dbOp.relations_column] =
+            createdResource[dbOp["primaryKey"]];
+          console.log("pivotPauload", pivotPayload);
+          await trx(dbOp.pivot_table).insert(pivotPayload).returning("*");
+          break;
+
+        case "create_pivot":
+          pivotPayload = dbOp.payload;
+          pivotPayload[dbOp.source_column] = mainResource.uuid;
+          await trx(dbOp.table).insert(pivotPayload).returning("*");
+          break;
+
+        default:
+          break;
+      }
+    }
 
     return mainResource;
   });
@@ -96,8 +135,6 @@ const createResource = async (resourceSpec, payload) => {
     const rows = await trx(table).insert(dbRecord).returning("*");
     let mainResource = rows[0];
 
-    console.log("dbOps", dbOps);
-
     for (let dbOpsCounter = 0; dbOpsCounter < dbOps.length; dbOpsCounter++) {
       const dbOp = dbOps[dbOpsCounter];
 
@@ -137,18 +174,6 @@ const createResource = async (resourceSpec, payload) => {
   });
 
   return result;
-
-  // This method should take structure from json doc
-  // It should validate the data
-  // It should also make sense of relationships
-  // We can handle following relationships
-  // one_one - table_which_maintains_this_relationship, column
-  // one_many - user has many addresses
-  // - addresses table
-  // - current resource id
-  // many_many
-  // - pivot table
-  // columns
 };
 
 const addFunction = (name, validator) => {
