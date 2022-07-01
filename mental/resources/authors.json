@@ -1,8 +1,15 @@
 {
-  "type": "author",
+  "name": "author",
   "label": "Authors",
   "sql_table": "authors",
   "attributes": [
+    {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "Identifier",
+      "primary": true,
+      "value": "fn:uuid"
+    },
     {
       "name": "name",
       "label": "Name",

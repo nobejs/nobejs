@@ -1,16 +1,22 @@
 {
-  "type": "categories",
+  "name": "category",
+  "sql_table": "categories",
   "label": "Categories",
   "attributes": [
     {
-      "name": "title",
-      "title": "Title",
-      "type": "string"
+      "name": "uuid",
+      "type": "uuid",
+      "label": "Identifier",
+      "primary": true,
+      "value": "fn:uuid"
     },
     {
-      "name": "description",
-      "title": "Description",
-      "type": "text"
+      "name": "title",
+      "type": "string",
+      "label": "Title",
+      "description": "This would be the title of the category",
+      "validators": ["required"]
     }
-  ]
+  ],
+  "hooks": {}
 }

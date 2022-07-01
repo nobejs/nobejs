@@ -8,33 +8,48 @@
       "type": "uuid",
       "label": "Identifier",
       "primary": true,
-      "automatic": true
+      "value": "fn:uuid"
     },
     {
       "name": "title",
       "type": "string",
       "label": "Title",
       "description": "This would be the title of the post",
-      "validators": ["required"],
-      "authorization": ["create_post"]
+      "validators": ["required"]
     },
     {
-      "name": "author",
+      "name": "creator",
       "label": "Author",
       "type": "relation",
       "relation": "belongsTo",
-      "current_matching_column": "author_uuid",
-      "external_matching_column": "uuid"
+      "resource": "author",
+      "source_column": "author_uuid"
+    },
+    {
+      "name": "categories",
+      "label": "Categories",
+      "type": "relation",
+      "relation": "manyToMany",
+      "resource": "category",
+      "pivot_table": "category_posts",
+      "source_column": "post_uuid",
+      "relations_column": "category_uuid"
     },
     {
       "name": "published_at",
       "label": "Published at",
-      "type": "datetime"
+      "type": "datetime",
+      "value": "fn:now"
     },
     {
       "name": "body",
       "label": "Body",
       "type": "editor"
+    },
+    {
+      "name": "meta",
+      "label": "Meta",
+      "type": "object"
     }
   ],
   "hooks": {

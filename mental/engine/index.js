@@ -6,6 +6,7 @@ const pickKeysFromObject = requireUtil("pickKeysFromObject");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const baseRepo = requireUtil("baseRepo");
 const validator = requireValidator();
+const { mapObjectToResource, findPrimaryKey } = require("./helpers");
 
 const customFunctions = {};
 const resourceModels = {};
@@ -72,40 +73,136 @@ const createResource = async (resourceSpec, payload) => {
     return c.type === "relation";
   });
 
+  let belongsToRelations = attributes.filter((c) => {
+    return c.type === "relation" && c.relation === "belongsTo";
+  });
+
+  let manyToManyRelations = attributes.filter((c) => {
+    return c.type === "relation" && c.relation === "manyToMany";
+  });
+
   const dbRecord = pickKeysFromObject(payload, columns);
+
+  for (
+    let belongsToRelationsCounter = 0;
+    belongsToRelationsCounter < belongsToRelations.length;
+    belongsToRelationsCounter++
+  ) {
+    const belongsToRelation = belongsToRelations[belongsToRelationsCounter];
+
+    const payloadRelation = payload[belongsToRelation.name];
+
+    const mappedResource = mapObjectToResource(
+      payloadRelation,
+      resourceModels[belongsToRelation.resource]
+    );
+
+    const primaryKey = findPrimaryKey(
+      resourceModels[belongsToRelation.resource]
+    );
+
+    dbRecord[belongsToRelation["source_column"]] = mappedResource[primaryKey];
+  }
+
+  const dbOps = [];
+
+  for (
+    let manyToManyCounter = 0;
+    manyToManyCounter < manyToManyRelations.length;
+    manyToManyCounter++
+  ) {
+    const manyToManyRelation = manyToManyRelations[manyToManyCounter];
+    let payloadRelations = payload[manyToManyRelation.name];
+
+    const primaryKey = findPrimaryKey(
+      resourceModels[manyToManyRelation.resource]
+    );
+
+    for (
+      let payloadRelationCounter = 0;
+      payloadRelationCounter < payloadRelations.length;
+      payloadRelationCounter++
+    ) {
+      let payloadRelation = payloadRelations[payloadRelationCounter];
+      payloadRelation = mapObjectToResource(
+        payloadRelation,
+        resourceModels[manyToManyRelation.resource]
+      );
+
+      payloadRelations[payloadRelationCounter] = payloadRelation;
+
+      dbOps.push({
+        pivot_table: manyToManyRelation["pivot_table"],
+        operation: "truncate",
+        source_column: manyToManyRelation["source_column"],
+      });
+
+      if (payloadRelation[primaryKey] === undefined) {
+        dbOps.push({
+          table: resourceModels[manyToManyRelation.resource]["sql_table"],
+          operation: "create_many_to_many_resource",
+          source_column: manyToManyRelation["source_column"],
+          relations_column: manyToManyRelation["relations_column"],
+          payload: payloadRelation,
+          pivot_table: manyToManyRelation["pivot_table"],
+          primaryKey: primaryKey,
+        });
+      } else {
+        let opPayload = {};
+        opPayload[manyToManyRelation["relations_column"]] =
+          payloadRelation[primaryKey];
+        dbOps.push({
+          table: manyToManyRelation["pivot_table"],
+          operation: "create_pivot",
+          source_column: manyToManyRelation["source_column"],
+          payload: opPayload,
+        });
+      }
+    }
+  }
+
+  // console.log("dbOps", dbOps);
 
   let result = await knex.transaction(async (trx) => {
     const rows = await trx(table).insert(dbRecord).returning("*");
     let mainResource = rows[0];
 
-    for (
-      let relationIndex = 0;
-      relationIndex < relations.length;
-      relationIndex++
-    ) {
-      const relation = relations[relationIndex];
+    console.log("dbOps", dbOps);
 
-      if (relation.relation === "belongsTo") {
-        const dbRelationRecord = {};
-        dbRelationRecord[relation["current_matching_column"]] =
-          payload[relation.name];
-        payload["updated_at"] = new Date().toISOString();
-        await trx(table)
-          .where({
-            uuid: mainResource.uuid,
-          })
-          .whereNull("deleted_at")
-          .update(dbRelationRecord)
-          .returning("*");
+    for (let dbOpsCounter = 0; dbOpsCounter < dbOps.length; dbOpsCounter++) {
+      const dbOp = dbOps[dbOpsCounter];
+
+      let pivotPayload = {};
+
+      switch (dbOp.operation) {
+        case "truncate":
+          pivotPayload[dbOp.source_column] = mainResource.uuid;
+          await knex(dbOp.pivot_table).where(pivotPayload).truncate();
+          break;
+
+        case "create_many_to_many_resource":
+          let createdResource = await trx(dbOp.table)
+            .insert(dbOp.payload)
+            .returning("*");
+          createdResource = createdResource[0];
+          pivotPayload = {};
+          pivotPayload[dbOp.source_column] = mainResource.uuid;
+          pivotPayload[dbOp.relations_column] =
+            createdResource[dbOp["primaryKey"]];
+          console.log("pivotPauload", pivotPayload);
+          await trx(dbOp.pivot_table).insert(pivotPayload).returning("*");
+          break;
+
+        case "create_pivot":
+          pivotPayload = dbOp.payload;
+          pivotPayload[dbOp.source_column] = mainResource.uuid;
+          await trx(dbOp.table).insert(pivotPayload).returning("*");
+          break;
+
+        default:
+          break;
       }
     }
-
-    mainResource = await trx(table)
-      .where({
-        uuid: mainResource.uuid,
-      })
-      .whereNull("deleted_at")
-      .first();
 
     return mainResource;
   });
@@ -152,7 +249,7 @@ const validate = async (attributes, payload) => {
     }
   }
 
-  console.log("constraints", constraints);
+  // console.log("constraints", constraints);
 
   return validator(payload, constraints);
 };
