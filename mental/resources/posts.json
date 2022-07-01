@@ -4,6 +4,13 @@
   "label": "Posts",
   "attributes": [
     {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "Identifier",
+      "primary": true,
+      "automatic": true
+    },
+    {
       "name": "title",
       "type": "string",
       "label": "Title",
