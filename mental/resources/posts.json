@@ -1,0 +1,40 @@
+{
+  "name": "posts",
+  "sql_table": "posts",
+  "label": "Posts",
+  "attributes": [
+    {
+      "name": "title",
+      "type": "string",
+      "label": "Title",
+      "description": "This would be the title of the post",
+      "validation": {
+        "maxLength": 100,
+        "minLength": 20
+      },
+      "authorization": ["create_post"]
+    },
+    {
+      "name": "author",
+      "label": "Author",
+      "type": "relation",
+      "relation": "hasOne"
+    },
+    {
+      "name": "categories",
+      "label": "Categories",
+      "type": "relation",
+      "relation": "hasMany"
+    },
+    {
+      "name": "published_at",
+      "label": "Published at",
+      "type": "datetime"
+    },
+    {
+      "name": "body",
+      "label": "Body",
+      "type": "editor"
+    }
+  ]
+}
