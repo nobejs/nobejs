@@ -8,10 +8,10 @@
       "type": "string",
       "label": "Title",
       "description": "This would be the title of the post",
-      "validation": {
-        "maxLength": 100,
-        "minLength": 20
-      },
+      "validation": [
+        "required",
+        { "type": "custom", "function": "uniqueInTableForAnAuthor" }
+      ],
       "authorization": ["create_post"]
     },
     {

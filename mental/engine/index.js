@@ -5,6 +5,28 @@ const knex = requireKnex();
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 const baseRepo = requireUtil("baseRepo");
 
+const customValidators = {};
+
+// mental.createResource("type",data);
+// mental.updateResource("type", identifier, data)
+// mental.deleteResource("type",identifier)
+// mental.getResources("type",query)
+// mental.getResource("type",query)
+
+const createResource = async (type, payload) => {
+  // This method should take structure from json doc
+  // It should validate the data
+  // It should also make sense of relationships
+  // We can handle following relationships
+  // one_one - table_which_maintains_this_relationship, column
+  // one_many - user has many addresses
+  // - addresses table
+  // - current resource id
+  // many_many
+  // - pivot table
+  // columns
+};
+
 const run = async () => {
   const resourcesPath = path.resolve(`mental/resources`);
 
@@ -40,18 +62,29 @@ const run = async () => {
 
   const payload = pickKeysFromObject(request, columns);
 
+  console.log("customValidators", customValidators);
+
+  customValidators["uniqueForAuthor"](payload);
+
   // Create Post
 
-  const post = await baseRepo.create(
-    resourceModels["posts"]["sql_table"],
-    payload
-  );
+  // const post = await baseRepo.create(
+  //   resourceModels["posts"]["sql_table"],
+  //   payload
+  // );
 
-  console.log("called engine", post);
+  // console.log("called engine", post);
 };
 
-module.exports = run;
+const addValidator = (name, validator) => {
+  customValidators[name] = validator;
+};
 
-(async () => {
-  await run();
-})();
+module.exports = {
+  run,
+  addValidator,
+};
+
+// (async () => {
+//   await run();
+// })();
