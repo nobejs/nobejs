@@ -10,11 +10,15 @@ module.exports = function (app) {
 
   mentalRoutes.forEach((mentalRoute) => {
     app[mentalRoute.method](mentalRoute.path, async (req, res, next) => {
-      let result = await mentalEngine.executeViaApi(mentalRoute.operation, {
-        req,
-        res,
-        next,
-      });
+      let result = await mentalEngine.executeViaApi(
+        mentalRoute.operation,
+        mentalRoute.resource,
+        {
+          req,
+          res,
+          next,
+        }
+      );
       return res.code(200).send(result);
     });
   });

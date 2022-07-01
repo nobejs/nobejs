@@ -83,9 +83,10 @@ const addFunction = (name, validator) => {
   customFunctions[name] = validator;
 };
 
-const executeViaApi = async (operation, { req, res, next }) => {
+const executeViaApi = async (operation, resource, { req, res, next }) => {
   return {
     operation,
+    resource,
   };
 };
 
@@ -94,19 +95,19 @@ const routes = () => {
   const apiEndpoints = [];
 
   let crudPaths = [
-    { method: "get", path: "/$resources", operation: "get_$resources" },
-    { method: "post", path: "/$resources", operation: "create_$resource" },
-    { method: "get", path: "/$resources/:uuid", operation: "get_$resource" },
-    { method: "put", path: "/$resources/:uuid", operation: "update_$resource" },
+    { method: "get", path: "/$resources", operation: "get_resources" },
+    { method: "post", path: "/$resources", operation: "create_resource" },
+    { method: "get", path: "/$resources/:uuid", operation: "get_resource" },
+    { method: "put", path: "/$resources/:uuid", operation: "update_resource" },
     {
       method: "patch",
       path: "/$resources/:uuid",
-      operation: "patch_$resource",
+      operation: "patch_resource",
     },
     {
       method: "delete",
       path: "/$resources/:uuid",
-      operation: "delete_$resource",
+      operation: "delete_resource",
     },
   ];
 
@@ -125,6 +126,7 @@ const routes = () => {
       const crudPath = crudPaths[crudPathCounter];
 
       apiEndpoints.push({
+        resource: resource,
         method: crudPath.method,
         path: crudPath.path.replace("$resource", resource),
         operation: crudPath.operation.replace("$resource", resource),
