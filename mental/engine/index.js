@@ -16,6 +16,46 @@ const resourceModels = {};
 // mental.getResources("type",query)
 // mental.getResource("type",query)
 
+const updateResource = async (resourceSpec, payload) => {
+  let attributes = resourceSpec["attributes"];
+  let table = resourceSpec["sql_table"];
+
+  let columns = attributes
+    .filter((c) => {
+      return c.type !== "relation";
+    })
+    .map((c) => {
+      return `${c.name}`;
+    });
+
+  let relations = attributes.filter((c) => {
+    return c.type === "relation";
+  });
+
+  const dbRecord = pickKeysFromObject(payload, columns);
+
+  let result = await knex.transaction(async (trx) => {
+    await trx(table)
+      .where({
+        uuid: payload.uuid,
+      })
+      .whereNull("deleted_at")
+      .update(dbRecord)
+      .returning("*");
+
+    let mainResource = await trx(table)
+      .where({
+        uuid: payload.uuid,
+      })
+      .whereNull("deleted_at")
+      .first();
+
+    return mainResource;
+  });
+
+  return result;
+};
+
 const createResource = async (resourceSpec, payload) => {
   let attributes = resourceSpec["attributes"];
   let table = resourceSpec["sql_table"];
@@ -44,17 +84,20 @@ const createResource = async (resourceSpec, payload) => {
       relationIndex++
     ) {
       const relation = relations[relationIndex];
-      const dbRelationRecord = {};
-      dbRelationRecord[relation["current_matching_column"]] =
-        payload[relation.name];
-      payload["updated_at"] = new Date().toISOString();
-      await trx(table)
-        .where({
-          uuid: mainResource.uuid,
-        })
-        .whereNull("deleted_at")
-        .update(dbRelationRecord)
-        .returning("*");
+
+      if (relation.relation === "belongsTo") {
+        const dbRelationRecord = {};
+        dbRelationRecord[relation["current_matching_column"]] =
+          payload[relation.name];
+        payload["updated_at"] = new Date().toISOString();
+        await trx(table)
+          .where({
+            uuid: mainResource.uuid,
+          })
+          .whereNull("deleted_at")
+          .update(dbRelationRecord)
+          .returning("*");
+      }
     }
 
     mainResource = await trx(table)
@@ -120,6 +163,7 @@ const executeViaApi = async (operation, resource, { req, res, next }) => {
     let columns = attributes.map((c) => {
       return `${c.name}`;
     });
+    columns.push("uuid");
 
     const payload = findKeysFromRequest(req, columns);
 
@@ -130,6 +174,10 @@ const executeViaApi = async (operation, resource, { req, res, next }) => {
     switch (operation) {
       case "create_resource":
         result = await createResource(resourceModels[resource], payload);
+        break;
+
+      case "update_resource":
+        result = await updateResource(resourceModels[resource], payload);
         break;
 
       default:
