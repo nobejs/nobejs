@@ -8,23 +8,16 @@
       "type": "string",
       "label": "Title",
       "description": "This would be the title of the post",
-      "validation": [
-        "required",
-        { "type": "custom", "function": "uniqueInTableForAnAuthor" }
-      ],
+      "validators": ["required"],
       "authorization": ["create_post"]
     },
     {
       "name": "author",
       "label": "Author",
       "type": "relation",
-      "relation": "hasOne"
-    },
-    {
-      "name": "categories",
-      "label": "Categories",
-      "type": "relation",
-      "relation": "hasMany"
+      "relation": "belongsTo",
+      "current_matching_column": "author_uuid",
+      "external_matching_column": "uuid"
     },
     {
       "name": "published_at",

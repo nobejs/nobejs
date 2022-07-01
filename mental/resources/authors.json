@@ -1,25 +1,12 @@
 {
-  "type": "authors",
+  "type": "author",
   "label": "Authors",
-  "fields": [
+  "sql_table": "authors",
+  "attributes": [
     {
       "name": "name",
-      "title": "Name",
+      "label": "Name",
       "type": "string"
-    },
-    {
-      "name": "slug",
-      "title": "Slug",
-      "type": "slug",
-      "options": {
-        "source": "name",
-        "maxLength": 96
-      }
-    },
-    {
-      "name": "image",
-      "title": "Image",
-      "type": "image"
     }
   ]
 }
