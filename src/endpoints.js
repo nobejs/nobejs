@@ -1,5 +1,3 @@
-const mentalEngine = require("../mental/engine");
-
 module.exports = (app) => {
   app.get("/liveness", async (req, res) => {
     // mentalEngine.run();

@@ -2,15 +2,16 @@ const Config = require("../config")();
 const endpoints = Config.load(Config["endpoints"]);
 const responseKey = Config["responseKey"];
 const generateApiPath = requireUtil("generateApiPath");
-const mentalEngine = require("../mental/implementation");
+const mentalImplementation = require("../mental-nobejs/implementation");
+const mental = require("../mental-nodejs/engine");
 
 module.exports = function (app) {
-  const mentalRoutes = mentalEngine.routes();
+  const mentalRoutes = mental.routes();
   // console.log("mentalRoutes", mentalRoutes);
 
   mentalRoutes.forEach((mentalRoute) => {
     app[mentalRoute.method](mentalRoute.path, async (req, res, next) => {
-      let result = await mentalEngine.executeViaApi(
+      let result = await mentalImplementation.executeViaApi(
         mentalRoute.operation,
         mentalRoute.resource,
         {
