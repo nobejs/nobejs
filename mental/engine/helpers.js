@@ -1,5 +1,17 @@
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 
+const getColumnsFromAttributes = (resourceSpec) => {
+  let columns = resourceSpec.attributes
+    .filter((c) => {
+      return c.type !== "relation";
+    })
+    .map((c) => {
+      return `${c.name}`;
+    });
+
+  return columns;
+};
+
 const mapObjectToResource = (object, resource) => {
   let columns = resource.attributes
     .filter((c) => {
@@ -132,4 +144,5 @@ module.exports = {
   findPrimaryKey,
   augmentWithBelongsTo,
   augmentWithManyToMany,
+  getColumnsFromAttributes,
 };

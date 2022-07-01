@@ -6,13 +6,10 @@ const pickKeysFromObject = requireUtil("pickKeysFromObject");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const baseRepo = requireUtil("baseRepo");
 const validator = requireValidator();
-const {
-  mapObjectToResource,
-  findPrimaryKey,
-  augmentWithBelongsTo,
-  augmentWithManyToMany,
-} = require("./helpers");
-
+const { augmentWithBelongsTo, augmentWithManyToMany } = require("./helpers");
+const createResource = require("./createResource");
+const updateResource = require("./updateResource");
+const getResource = require("./getResource");
 const customFunctions = {};
 const resourceModels = {};
 
@@ -21,160 +18,6 @@ const resourceModels = {};
 // mental.deleteResource("type",identifier)
 // mental.getResources("type",query)
 // mental.getResource("type",query)
-
-const updateResource = async (resourceSpec, payload) => {
-  let attributes = resourceSpec["attributes"];
-  let table = resourceSpec["sql_table"];
-
-  let columns = attributes
-    .filter((c) => {
-      return c.type !== "relation";
-    })
-    .map((c) => {
-      return `${c.name}`;
-    });
-
-  let dbRecord = pickKeysFromObject(payload, columns);
-
-  dbRecord = augmentWithBelongsTo(
-    dbRecord,
-    payload,
-    attributes,
-    resourceModels
-  );
-
-  const dbOps = augmentWithManyToMany(
-    dbRecord,
-    payload,
-    attributes,
-    resourceModels
-  );
-
-  let result = await knex.transaction(async (trx) => {
-    const rows = await trx(table)
-      .where({
-        uuid: payload.uuid,
-      })
-      .whereNull("deleted_at")
-      .update(dbRecord)
-      .returning("*");
-    let mainResource = rows[0];
-
-    for (let dbOpsCounter = 0; dbOpsCounter < dbOps.length; dbOpsCounter++) {
-      const dbOp = dbOps[dbOpsCounter];
-
-      let pivotPayload = {};
-
-      switch (dbOp.operation) {
-        case "truncate":
-          pivotPayload[dbOp.source_column] = mainResource.uuid;
-          await knex(dbOp.pivot_table).where(pivotPayload).del();
-          break;
-
-        case "create_many_to_many_resource":
-          let createdResource = await trx(dbOp.table)
-            .insert(dbOp.payload)
-            .returning("*");
-          createdResource = createdResource[0];
-          pivotPayload = {};
-          pivotPayload[dbOp.source_column] = mainResource.uuid;
-          pivotPayload[dbOp.relations_column] =
-            createdResource[dbOp["primaryKey"]];
-          console.log("pivotPauload", pivotPayload);
-          await trx(dbOp.pivot_table).insert(pivotPayload).returning("*");
-          break;
-
-        case "create_pivot":
-          pivotPayload = dbOp.payload;
-          pivotPayload[dbOp.source_column] = mainResource.uuid;
-          await trx(dbOp.table).insert(pivotPayload).returning("*");
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    return mainResource;
-  });
-
-  return result;
-};
-
-const createResource = async (resourceSpec, payload) => {
-  let attributes = resourceSpec["attributes"];
-  let table = resourceSpec["sql_table"];
-
-  let columns = attributes
-    .filter((c) => {
-      return c.type !== "relation";
-    })
-    .map((c) => {
-      return `${c.name}`;
-    });
-
-  let dbRecord = pickKeysFromObject(payload, columns);
-
-  dbRecord = augmentWithBelongsTo(
-    dbRecord,
-    payload,
-    attributes,
-    resourceModels
-  );
-
-  const dbOps = augmentWithManyToMany(
-    dbRecord,
-    payload,
-    attributes,
-    resourceModels
-  );
-
-  // console.log("dbOps", dbOps);
-
-  let result = await knex.transaction(async (trx) => {
-    const rows = await trx(table).insert(dbRecord).returning("*");
-    let mainResource = rows[0];
-
-    for (let dbOpsCounter = 0; dbOpsCounter < dbOps.length; dbOpsCounter++) {
-      const dbOp = dbOps[dbOpsCounter];
-
-      let pivotPayload = {};
-
-      switch (dbOp.operation) {
-        case "truncate":
-          pivotPayload[dbOp.source_column] = mainResource.uuid;
-          await knex(dbOp.pivot_table).where(pivotPayload).del();
-          break;
-
-        case "create_many_to_many_resource":
-          let createdResource = await trx(dbOp.table)
-            .insert(dbOp.payload)
-            .returning("*");
-          createdResource = createdResource[0];
-          pivotPayload = {};
-          pivotPayload[dbOp.source_column] = mainResource.uuid;
-          pivotPayload[dbOp.relations_column] =
-            createdResource[dbOp["primaryKey"]];
-          console.log("pivotPauload", pivotPayload);
-          await trx(dbOp.pivot_table).insert(pivotPayload).returning("*");
-          break;
-
-        case "create_pivot":
-          pivotPayload = dbOp.payload;
-          pivotPayload[dbOp.source_column] = mainResource.uuid;
-          await trx(dbOp.table).insert(pivotPayload).returning("*");
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    return mainResource;
-  });
-
-  return result;
-};
 
 const addFunction = (name, validator) => {
   customFunctions[name] = validator;
@@ -215,20 +58,43 @@ const executeViaApi = async (operation, resource, { req, res, next }) => {
       return `${c.name}`;
     });
     columns.push("uuid");
+    columns.push("include");
 
     const payload = findKeysFromRequest(req, columns);
 
-    await validate(attributes, payload);
+    console.log("resource", operation);
+
+    if (["create_resource", "update_resource"].includes(operation)) {
+      await validate(attributes, payload);
+    }
 
     let result;
 
     switch (operation) {
       case "create_resource":
-        result = await createResource(resourceModels[resource], payload);
+        result = await createResource(
+          resourceModels,
+          resourceModels[resource],
+          payload
+        );
         break;
 
       case "update_resource":
-        result = await updateResource(resourceModels[resource], payload);
+        result = await updateResource(
+          resourceModels,
+          resourceModels[resource],
+          payload
+        );
+
+        break;
+
+      case "get_resource":
+        result = await getResource(
+          resourceModels,
+          resourceModels[resource],
+          payload
+        );
+
         break;
 
       default:
