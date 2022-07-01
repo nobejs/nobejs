@@ -89,26 +89,24 @@ const executeViaApi = async (operation, { req, res, next }) => {
   };
 };
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
-
 const routes = () => {
   const resources = Object.keys(resourceModels);
   const apiEndpoints = [];
 
   let crudPaths = [
-    { method: "get", path: "/$resources", operation: "get$resources" },
-    { method: "post", path: "/$resources", operation: "create$resource" },
-    { method: "get", path: "/$resources/:uuid", operation: "get$resource" },
-    { method: "put", path: "/$resources/:uuid", operation: "update$resource" },
+    { method: "get", path: "/$resources", operation: "get_$resources" },
+    { method: "post", path: "/$resources", operation: "create_$resource" },
+    { method: "get", path: "/$resources/:uuid", operation: "get_$resource" },
+    { method: "put", path: "/$resources/:uuid", operation: "update_$resource" },
     {
       method: "patch",
       path: "/$resources/:uuid",
-      operation: "patch$resource",
+      operation: "patch_$resource",
     },
     {
       method: "delete",
       path: "/$resources/:uuid",
-      operation: "delete$resource",
+      operation: "delete_$resource",
     },
   ];
 
@@ -129,17 +127,14 @@ const routes = () => {
       apiEndpoints.push({
         method: crudPath.method,
         path: crudPath.path.replace("$resource", resource),
-        operation: crudPath.operation.replace(
-          "$resource",
-          capitalize(resource)
-        ),
+        operation: crudPath.operation.replace("$resource", resource),
       });
 
       // console.log("resource", resource, crudPath);
     }
   }
 
-  console.log("apiEndpoints", apiEndpoints);
+  // console.log("apiEndpoints", apiEndpoints);
 
   return apiEndpoints;
 };
@@ -156,7 +151,6 @@ const init = () => {
       resourceModels[resourceData.name] = resourceData;
     }
   });
-  // Also check if any resource names are duplicated
 };
 
 module.exports = {
@@ -166,7 +160,3 @@ module.exports = {
   run,
   addFunction,
 };
-
-// (async () => {
-//   await run();
-// })();
