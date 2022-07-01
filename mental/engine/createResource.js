@@ -6,13 +6,7 @@ const createResource = async (resourceModels, resourceSpec, payload) => {
   let attributes = resourceSpec["attributes"];
   let table = resourceSpec["sql_table"];
 
-  let columns = attributes
-    .filter((c) => {
-      return c.type !== "relation";
-    })
-    .map((c) => {
-      return `${c.name}`;
-    });
+  let columns = getColumnsFromAttributes(resourceSpec);
 
   let dbRecord = pickKeysFromObject(payload, columns);
 
