@@ -35,13 +35,55 @@ module.exports = async (dbOps) => {
 
           case "get":
             console.log("dbOp", dbOp);
+            const filters = dbOp.filters;
+            let dataBuilder = trx(dbOp.table);
+            let totalBuilder = trx(dbOp.table);
 
-            opResult = await trx(dbOp.table)
-              .where(dbOp.where)
+            for (let index = 0; index < filters.length; index++) {
+              const filter = filters[index];
+              switch (filter.op) {
+                case "like":
+                  dataBuilder = dataBuilder.where(
+                    filter.column,
+                    "LIKE",
+                    `%${filter.value}%`
+                  );
+                  totalBuilder = totalBuilder.where(
+                    filter.column,
+                    "LIKE",
+                    `%${filter.value}%`
+                  );
+                  break;
+
+                case "gte":
+                  dataBuilder = dataBuilder.where(
+                    filter.column,
+                    ">=",
+                    `${filter.value}`
+                  );
+                  totalBuilder = totalBuilder.where(
+                    filter.column,
+                    ">=",
+                    `${filter.value}`
+                  );
+                  break;
+
+                default:
+                  break;
+              }
+            }
+
+            let dataResult = await dataBuilder
               .orderBy(dbOp.orderBy)
-              .select("*")
+              .select(dbOp.selectColumns)
               .limit(dbOp.limit)
               .offset(dbOp.offset);
+
+            let totalResult = await totalBuilder.count({ count: "*" }).first();
+            let total = parseInt(totalResult.count);
+
+            return { data: dataResult, total: total };
+
             break;
         }
       }

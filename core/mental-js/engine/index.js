@@ -197,6 +197,7 @@ var engine = (function () {
       columns.push("per_page");
       columns.push("page");
       columns.push("sort");
+      columns.push("filters");
 
       console.log("req", req.query);
 
@@ -208,7 +209,6 @@ var engine = (function () {
       if (fs.existsSync(beforeHookPath)) {
         const beforeHook = require(beforeHookPath);
         beforeHookResult = await beforeHook(req);
-        console.log("beforeHookResult", beforeHookResult);
         payload = { ...payload, ...beforeHookResult };
       }
 

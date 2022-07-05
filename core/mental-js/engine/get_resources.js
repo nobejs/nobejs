@@ -20,15 +20,41 @@ module.exports = async (
     `${primaryKeys[0]}:desc`
   ).split("*");
 
+  const selectColumns = directAttributes.map((m) => `${table}.${m}`);
+
   let orderBy = sort.map((s) => {
     let split = s.split(":");
     return { column: split[0], order: split[1], nulls: "first" };
   });
 
+  // https://hasura.io/docs/latest/graphql/core/databases/postgres/queries/query-filters/
+
+  let filters = [];
+
+  if (payload.filters !== undefined) {
+    filters = (payload.filters || ``).split("*");
+
+    filters = filters
+      .filter((f) => {
+        return f !== "";
+      })
+      .map((f) => {
+        let split = f.split("$");
+        return {
+          column: split[0].toLowerCase(),
+          op: split[1],
+          value: split[2],
+        };
+      });
+  }
+
+  console.log("filters", filters);
+
   dbOps.push({
     table: table,
     operation: "get",
-    where: {},
+    filters: filters,
+    selectColumns: selectColumns,
     limit: per_page,
     offset: (page - 1) * per_page,
     orderBy,
