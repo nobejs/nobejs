@@ -2,7 +2,7 @@ const Config = require("../config")();
 const endpoints = Config.load(Config["endpoints"]);
 const responseKey = Config["responseKey"];
 const generateApiPath = requireUtil("generateApiPath");
-const mental = require("../mental-js/engine");
+const mental = require("./mental-js/engine");
 
 module.exports = function (app) {
   const mentalRoutes = mental.routes();
