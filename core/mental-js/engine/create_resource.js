@@ -1,12 +1,4 @@
-const {
-  augmentWithBelongsTo,
-  augmentWithManyToMany,
-  findPrimaryKey,
-  getColumnsFromAttributes,
-  getAutomaticAttributes,
-  augmentPayloadWithAutomaticAttributes,
-  getAttributes,
-} = require("./helpers");
+const { gettingStartedPayload } = require("./helpers");
 const runDbOps = require("./dbOps");
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 
@@ -17,18 +9,8 @@ module.exports = async (
   resource,
   payload
 ) => {
-  let resourceSpec = resourceModels[resource];
-  let table = resourceSpec["sql_table"];
-  let dbPayload = {};
-  let augmentedPayload = augmentPayloadWithAutomaticAttributes(
-    resourceSpec,
-    operation,
-    payload
-  );
-  dbPayload = augmentedPayload;
-  const primaryKeys = findPrimaryKey(resourceSpec);
-
-  let dbOps = [];
+  let { resourceSpec, table, dbPayload, primaryKeys, dbOps } =
+    gettingStartedPayload({ resourceModels, operation, resource, payload });
 
   dbOps.push({
     table: table,

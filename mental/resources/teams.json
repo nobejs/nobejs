@@ -3,7 +3,7 @@
   "label": "Teams",
   "api_endpoint": "teams",
   "sql_table": "teams",
-  "softDelete": true,
+  "soft_delete": true,
   "attributes": [
     {
       "name": "uuid",

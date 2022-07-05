@@ -213,6 +213,28 @@ const cleanRequestObject = (resourceModels, resource, req) => {
   return payload;
 };
 
+const gettingStartedPayload = ({
+  resourceModels,
+  operation,
+  resource,
+  payload,
+}) => {
+  let resourceSpec = resourceModels[resource];
+  let table = resourceSpec["sql_table"];
+  let dbPayload = {};
+  let augmentedPayload = augmentPayloadWithAutomaticAttributes(
+    resourceSpec,
+    operation,
+    payload
+  );
+  dbPayload = augmentedPayload;
+  const primaryKeys = findPrimaryKey(resourceSpec);
+
+  let dbOps = [];
+
+  return { resourceSpec, table, dbPayload, primaryKeys, dbOps };
+};
+
 module.exports = {
   getAttributes,
   getAutomaticAttributes,
@@ -223,4 +245,5 @@ module.exports = {
   augmentWithManyToMany,
   getDirectAttributes,
   augmentPayloadWithAutomaticAttributes,
+  gettingStartedPayload,
 };
