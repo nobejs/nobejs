@@ -61,6 +61,7 @@ module.exports = async (
   });
 
   let result = await runDbOps(dbOps);
+  result = { data: result.data, meta: { page, per_page, total: result.total } };
 
   return { result, payload };
 };
