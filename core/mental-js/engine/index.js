@@ -4,6 +4,7 @@ const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const create_resource = require("./create_resource");
 const update_resource = require("./update_resource");
 const delete_resource = require("./delete_resource");
+const get_resource = require("./get_resource");
 
 const routes = (models, mentalConfig) => {
   const resources = Object.values(models);
@@ -123,6 +124,17 @@ const execute = async (
 
     case "delete_resource":
       executeResult = await delete_resource(
+        mentalConfig,
+        resourceModels,
+        operation,
+        resource,
+        payload
+      );
+
+      break;
+
+    case "get_resource":
+      executeResult = await get_resource(
         mentalConfig,
         resourceModels,
         operation,
