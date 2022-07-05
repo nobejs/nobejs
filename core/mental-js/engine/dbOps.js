@@ -8,8 +8,6 @@ module.exports = async (dbOps) => {
       for (let dbOpsCounter = 0; dbOpsCounter < dbOps.length; dbOpsCounter++) {
         const dbOp = dbOps[dbOpsCounter];
 
-        console.log("dbOp", dbOp);
-
         switch (dbOp.operation) {
           case "create":
             opResult = await trx(dbOp.table)
@@ -28,7 +26,16 @@ module.exports = async (dbOps) => {
             opResult = await trx(dbOp.table).where(dbOp.where).delete();
             break;
 
+          case "get_first":
+            opResult = await trx(dbOp.table)
+              .where(dbOp.where)
+              .select("*")
+              .first();
+            break;
+
           case "get":
+            console.log("dbOp", dbOp);
+
             opResult = await trx(dbOp.table).where(dbOp.where).select("*");
             break;
         }

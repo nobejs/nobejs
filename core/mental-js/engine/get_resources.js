@@ -12,21 +12,23 @@ module.exports = async (
   let { resourceSpec, table, dbPayload, primaryKeys, dbOps } =
     gettingStartedPayload({ resourceModels, operation, resource, payload });
 
-  dbOps.push({
-    table: table,
-    operation: "create",
-    payload: dbPayload,
-  });
-
-  let getWhere = pickKeysFromObject(dbPayload, primaryKeys);
+  const per_page = parseInt(payload.per_page || resourceSpec.per_page || 10);
+  const page = parseInt(payload.page || resourceSpec.per_page || 1);
+  const sort_column =
+    payload.sort_column || resourceSpec.sort_column || primaryKeys[0];
+  const sort_order = payload.sort_order || resourceSpec.sort_order || "desc";
 
   dbOps.push({
     table: table,
-    operation: "get_first",
-    where: getWhere,
+    operation: "get",
+    where: {},
+    limit: per_page,
+    offset: (page - 1) * per_page,
+    sort_column,
+    sort_order,
   });
 
   let result = await runDbOps(dbOps);
 
-  return { result, dbPayload };
+  return { result, payload };
 };

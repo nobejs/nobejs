@@ -4,6 +4,9 @@
   "api_endpoint": "teams",
   "sql_table": "teams",
   "soft_delete": true,
+  "page": 1,
+  "sort_column": "title",
+  "sort_order": "desc",
   "attributes": [
     {
       "name": "uuid",

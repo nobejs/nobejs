@@ -16,11 +16,13 @@ module.exports = async (
 
   dbOps.push({
     table: table,
-    operation: "get",
+    operation: "get_first",
     where: getWhere,
   });
 
   let result = await runDbOps(dbOps);
+
+  console.log("reus", result);
 
   return { result, dbPayload };
 };

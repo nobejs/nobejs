@@ -5,6 +5,7 @@ const create_resource = require("./create_resource");
 const update_resource = require("./update_resource");
 const delete_resource = require("./delete_resource");
 const get_resource = require("./get_resource");
+const get_resources = require("./get_resources");
 
 const routes = (models, mentalConfig) => {
   const resources = Object.values(models);
@@ -144,6 +145,17 @@ const execute = async (
 
       break;
 
+    case "get_resources":
+      executeResult = await get_resources(
+        mentalConfig,
+        resourceModels,
+        operation,
+        resource,
+        payload
+      );
+
+      break;
+
     default:
       break;
   }
@@ -182,6 +194,8 @@ var engine = (function () {
         return `${c.name}`;
       });
       columns.push("include");
+      columns.push("per_page");
+      columns.push("page");
       let payload = findKeysFromRequest(req, columns);
 
       const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
