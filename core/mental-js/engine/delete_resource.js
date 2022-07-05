@@ -30,13 +30,24 @@ module.exports = async (
 
   let dbOps = [];
 
+  console.log("resourceSpec", resourceSpec.softDelete);
+
   let updateWhere = pickKeysFromObject(dbPayload, primaryKeys);
 
-  dbOps.push({
-    table: table,
-    operation: "delete",
-    where: updateWhere,
-  });
+  if (resourceSpec.softDelete && resourceSpec.softDelete === true) {
+    dbOps.push({
+      table: table,
+      operation: "update",
+      payload: dbPayload,
+      where: updateWhere,
+    });
+  } else {
+    dbOps.push({
+      table: table,
+      operation: "delete",
+      where: updateWhere,
+    });
+  }
 
   let result = await runDbOps(dbOps);
 
