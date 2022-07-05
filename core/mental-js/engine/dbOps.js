@@ -24,6 +24,10 @@ module.exports = async (dbOps) => {
               .returning("*");
             break;
 
+          case "delete":
+            opResult = await trx(dbOp.table).where(dbOp.where).delete();
+            break;
+
           case "get":
             opResult = await trx(dbOp.table).where(dbOp.where).select("*");
             break;

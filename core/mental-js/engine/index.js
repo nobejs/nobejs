@@ -3,6 +3,7 @@ const path = require("path");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const create_resource = require("./create_resource");
 const update_resource = require("./update_resource");
+const delete_resource = require("./delete_resource");
 
 const routes = (models, mentalConfig) => {
   const resources = Object.values(models);
@@ -25,11 +26,11 @@ const routes = (models, mentalConfig) => {
       path: "/$api_endpoint/_bulk",
       operation: "update_resources",
     },
-    {
-      method: "patch",
-      path: "/$api_endpoint/_bulk",
-      operation: "patch_resources",
-    },
+    // {
+    //   method: "patch",
+    //   path: "/$api_endpoint/_bulk",
+    //   operation: "patch_resources",
+    // },
     {
       method: "delete",
       path: "/$api_endpoint/_bulk",
@@ -43,11 +44,11 @@ const routes = (models, mentalConfig) => {
       path: "/$api_endpoint/:uuid",
       operation: "update_resource",
     },
-    {
-      method: "patch",
-      path: "/$api_endpoint/:uuid",
-      operation: "patch_resource",
-    },
+    // {
+    //   method: "patch",
+    //   path: "/$api_endpoint/:uuid",
+    //   operation: "patch_resource",
+    // },
     {
       method: "delete",
       path: "/$api_endpoint/:uuid",
@@ -111,6 +112,17 @@ const execute = async (
 
     case "update_resource":
       executeResult = await update_resource(
+        mentalConfig,
+        resourceModels,
+        operation,
+        resource,
+        payload
+      );
+
+      break;
+
+    case "delete_resource":
+      executeResult = await delete_resource(
         mentalConfig,
         resourceModels,
         operation,
