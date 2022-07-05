@@ -9,22 +9,42 @@
       "type": "uuid",
       "label": "Identifier",
       "primary": true,
-      "value": "fn:uuid"
+      "automatic": ["create_resource"]
     },
     {
       "name": "title",
       "type": "string",
-      "label": "Title",
-      "description": "This would be the title of the post",
-      "validators": ["required"]
+      "label": "Title"
+    },
+    {
+      "name": "body",
+      "type": "text",
+      "label": "Body"
+    },
+    {
+      "name": "meta",
+      "label": "Meta",
+      "type": "object"
     },
     {
       "name": "creator",
       "label": "Author",
       "type": "relation",
-      "relation": "belongsTo",
-      "resource": "author",
-      "source_column": "author_uuid"
+      "relation": {
+        "type": "belong_to",
+        "resource": "author",
+        "db_column": "author_uuid"
+      }
+    },
+    {
+      "name": "creator",
+      "label": "Author",
+      "type": "relation",
+      "relation": {
+        "type": "belong_to",
+        "resource": "author",
+        "db_column": "author_uuid"
+      }
     },
     {
       "name": "categories",
@@ -41,16 +61,6 @@
       "label": "Published at",
       "type": "datetime",
       "value": "fn::now"
-    },
-    {
-      "name": "body",
-      "label": "Body",
-      "type": "editor"
-    },
-    {
-      "name": "meta",
-      "label": "Meta",
-      "type": "object"
     }
   ],
   "hooks": {

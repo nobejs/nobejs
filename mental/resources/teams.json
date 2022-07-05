@@ -1,0 +1,43 @@
+{
+  "name": "team",
+  "label": "Teams",
+  "api_endpoint": "teams",
+  "sql_table": "teams",
+  "attributes": [
+    {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "ID",
+      "primary": true,
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "title",
+      "label": "Title",
+      "type": "string"
+    },
+    {
+      "name": "meta",
+      "label": "Meta",
+      "type": "object"
+    },
+    {
+      "name": "created_at",
+      "type": "datetime",
+      "label": "created_at",
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "updated_at",
+      "type": "datetime",
+      "label": "updated_at",
+      "automatic": ["create_resource", "update_resource"]
+    },
+    {
+      "name": "deleted_at",
+      "type": "datetime",
+      "label": "deleted_at",
+      "automatic": ["delete_resource"]
+    }
+  ]
+}
