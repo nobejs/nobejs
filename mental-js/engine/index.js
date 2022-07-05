@@ -114,6 +114,7 @@ var engine = (function () {
   "use strict";
   const resourceModels = {};
   const customFunctions = {};
+  let mentalConfig = {};
   return {
     getResourceModels: () => {
       return resourceModels;
@@ -122,6 +123,7 @@ var engine = (function () {
       return routes(resourceModels);
     },
     init: (config) => {
+      mentalConfig = config;
       let resources = fs.readdirSync(config.resourcesPath);
       resources.forEach((resource) => {
         const resourcePath = path.resolve(
@@ -133,8 +135,21 @@ var engine = (function () {
         }
       });
     },
-    executeApi: function (operation, resource, { req, res, next }) {
+    executeApi: async function (operation, resource, { req, res, next }) {
+      const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
+      const afterHookPath = `${mentalConfig.hooksPath}/after_${resource}_${operation}.js`;
+
       console.log("executeApi", operation, resource);
+
+      if (fs.existsSync(beforeHookPath)) {
+        const beforeHook = require(beforeHookPath);
+        await beforeHook(req);
+      }
+
+      if (fs.existsSync(afterHookPath)) {
+        const afterHook = require(afterHookPath);
+        await afterHook();
+      }
 
       return {
         operation,
