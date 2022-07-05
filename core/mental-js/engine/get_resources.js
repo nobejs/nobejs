@@ -18,6 +18,13 @@ module.exports = async (
     payload.sort_column || resourceSpec.sort_column || primaryKeys[0];
   const sort_order = payload.sort_order || resourceSpec.sort_order || "desc";
 
+  /**
+     * knex('users').orderBy([
+  { column: 'email' }, 
+  { column: 'age', order: 'desc', nulls: 'first' }
+])
+     */
+
   dbOps.push({
     table: table,
     operation: "get",
