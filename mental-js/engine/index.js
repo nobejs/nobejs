@@ -1,15 +1,7 @@
 const fs = require("fs-extra");
 const path = require("path");
-// require("../../config");
-const knex = requireKnex();
-const pickKeysFromObject = requireUtil("pickKeysFromObject");
-const baseRepo = requireUtil("baseRepo");
-const validator = requireValidator();
-const { augmentWithBelongsTo, cleanRequestObject } = require("./helpers");
-const createResource = require("./createResource");
-const updateResource = require("./updateResource");
-const getResource = require("./getResource");
-const validate = require("./validate");
+const findKeysFromRequest = requireUtil("findKeysFromRequest");
+const create_resource = require("./create_resource");
 
 const routes = (models, mentalConfig) => {
   const resources = Object.values(models);
@@ -19,7 +11,7 @@ const routes = (models, mentalConfig) => {
       ? "/mental"
       : mentalConfig.mentalApiPrefix;
 
-  console.log("mentalApiPrefix", mentalApiPrefix);
+  // console.log("mentalApiPrefix", mentalApiPrefix);
 
   let crudPaths = [
     {
@@ -93,8 +85,34 @@ const routes = (models, mentalConfig) => {
   return apiEndpoints;
 };
 
-const execute = async (operation, resource, payload) => {
-  console.log("execute ", operation, resource, payload);
+const execute = async (
+  mentalConfig,
+  resourceModels,
+  operation,
+  resource,
+  payload
+) => {
+  // console.log("execute ", operation, resource, payload);
+
+  let executeResult = {};
+
+  switch (operation) {
+    case "create_resource":
+      executeResult = await create_resource(
+        mentalConfig,
+        resourceModels,
+        operation,
+        resource,
+        payload
+      );
+
+      break;
+
+    default:
+      break;
+  }
+
+  return executeResult;
 };
 
 var engine = (function () {
@@ -123,28 +141,42 @@ var engine = (function () {
       });
     },
     executeApi: async function (operation, resource, { req, res, next }) {
-      const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
-      const afterHookPath = `${mentalConfig.hooksPath}/after_${resource}_${operation}.js`;
-      let beforeHookResult = {};
-      let afterHookResult = {};
+      let attributes = resourceModels[resource]["attributes"];
+      let columns = attributes.map((c) => {
+        return `${c.name}`;
+      });
+      columns.push("include");
+      let payload = findKeysFromRequest(req, columns);
 
-      // console.log("executeApi", operation, resource);
+      const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
+      let beforeHookResult = {};
 
       if (fs.existsSync(beforeHookPath)) {
         const beforeHook = require(beforeHookPath);
         beforeHookResult = await beforeHook(req);
+        console.log("beforeHookResult", beforeHookResult);
+        payload = { ...payload, ...beforeHookResult };
       }
 
-      const payload = {};
+      let executeResult = await execute(
+        mentalConfig,
+        resourceModels,
+        operation,
+        resource,
+        payload
+      );
 
-      await execute(operation, resource, payload);
+      const afterHookPath = `${mentalConfig.hooksPath}/after_${resource}_${operation}.js`;
+      let afterHookResult = {};
 
       if (fs.existsSync(afterHookPath)) {
         const afterHook = require(afterHookPath);
         afterHookResult = await afterHook();
+        executeResult = { ...executeResult, ...afterHookResult };
       }
 
       return {
+        executeResult,
         operation,
         resource,
       };

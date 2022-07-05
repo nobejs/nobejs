@@ -1,19 +1,43 @@
 {
   "name": "author",
   "label": "Authors",
+  "api_endpoint": "authors",
   "sql_table": "authors",
   "attributes": [
     {
       "name": "uuid",
       "type": "uuid",
-      "label": "Identifier",
+      "label": "ID",
       "primary": true,
-      "value": "fn:uuid"
+      "automatic": ["create_resource"]
     },
     {
       "name": "name",
       "label": "Name",
       "type": "string"
+    },
+    {
+      "name": "team_uuid",
+      "label": "Team",
+      "type": "uuid"
+    },
+    {
+      "name": "created_at",
+      "type": "datetime",
+      "label": "created_at",
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "updated_at",
+      "type": "datetime",
+      "label": "updated_at",
+      "automatic": ["create_resource", "update_resource"]
+    },
+    {
+      "name": "deleted_at",
+      "type": "datetime",
+      "label": "deleted_at",
+      "automatic": ["delete_resource"]
     }
   ]
 }

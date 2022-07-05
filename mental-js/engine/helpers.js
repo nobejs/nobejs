@@ -1,5 +1,59 @@
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
+var uuid = require("uuid");
+
+const augmentPayloadWithAutomaticAttributes = (
+  resourceSpec,
+  operation,
+  payload
+) => {
+  const attributes = getAutomaticAttributes(resourceSpec, operation);
+
+  for (let index = 0; index < attributes.length; index++) {
+    const attribute = attributes[index];
+
+    switch (attribute.type) {
+      case "uuid":
+        payload[attribute.name] = uuid.v4();
+        break;
+
+      case "datetime":
+        payload[attribute.name] = new Date().toISOString();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return payload;
+};
+
+const getAutomaticAttributes = (resourceSpec, operation) => {
+  let attributes = resourceSpec.attributes
+    .filter((c) => {
+      return (
+        c.automatic && c.automatic.length > 0 && c.automatic.includes(operation)
+      );
+    })
+    .map((c) => {
+      return { type: c.type, name: c.name };
+    });
+
+  return attributes;
+};
+
+const getAttributes = (resourceSpec) => {
+  let columns = resourceSpec.attributes
+    .filter((c) => {
+      return c.type !== "relation";
+    })
+    .map((c) => {
+      return c;
+    });
+
+  return columns;
+};
 
 const getColumnsFromAttributes = (resourceSpec) => {
   let columns = resourceSpec.attributes
@@ -34,7 +88,7 @@ const findPrimaryKey = (resource) => {
       return `${c.name}`;
     });
 
-  return columns[0];
+  return columns;
 };
 
 const augmentWithBelongsTo = (
@@ -158,10 +212,13 @@ const cleanRequestObject = (resourceModels, resource, req) => {
 };
 
 module.exports = {
+  getAttributes,
+  getAutomaticAttributes,
   cleanRequestObject,
   mapObjectToResource,
   findPrimaryKey,
   augmentWithBelongsTo,
   augmentWithManyToMany,
   getColumnsFromAttributes,
+  augmentPayloadWithAutomaticAttributes,
 };
