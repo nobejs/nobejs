@@ -11,6 +11,7 @@ mentalEngine.addFunction("uniqueForAuthor", (payload) => {
 mentalEngine.init({
   resourcesPath: path.resolve(`mental/resources`),
   hooksPath: path.resolve(`mental/hooks`),
+  // mentalApiPrefix: "",
 });
 
 const server = httpServer({});

@@ -10,35 +10,16 @@ const createResource = require("./createResource");
 const updateResource = require("./updateResource");
 const getResource = require("./getResource");
 const validate = require("./validate");
-const customFunctions = {};
 
-// mental.createResource("type",data);
-// mental.updateResource("type", identifier, data)
-// mental.deleteResource("type",identifier)
-// mental.getResources("type",query)
-// mental.getResource("type",query)
-
-const addFunction = (name, validator) => {
-  customFunctions[name] = validator;
-};
-
-const init = () => {
-  const resourcesPath = path.resolve(`mental/resources`);
-  let resources = fs.readdirSync(resourcesPath);
-
-  resources.forEach((resource) => {
-    const resourcePath = path.resolve(`mental/resources/${resource}`);
-    let resourceData = JSON.parse(fs.readFileSync(resourcePath, "utf-8"));
-
-    if (resourceData.name) {
-      resourceModels[resourceData.name] = resourceData;
-    }
-  });
-};
-
-const routes = (models) => {
+const routes = (models, mentalConfig) => {
   const resources = Object.values(models);
   const apiEndpoints = [];
+  const mentalApiPrefix =
+    mentalConfig.mentalApiPrefix === undefined
+      ? "/mental"
+      : mentalConfig.mentalApiPrefix;
+
+  console.log("mentalApiPrefix", mentalApiPrefix);
 
   let crudPaths = [
     {
@@ -98,16 +79,22 @@ const routes = (models) => {
       apiEndpoints.push({
         resource: resource.name,
         method: crudPath.method,
-        path: crudPath.path.replace(
-          "$api_endpoint",
-          resource.api_endpoint || resource.name
-        ),
+        path:
+          mentalApiPrefix +
+          crudPath.path.replace(
+            "$api_endpoint",
+            resource.api_endpoint || resource.name
+          ),
         operation: crudPath.operation,
       });
     }
   }
 
   return apiEndpoints;
+};
+
+const execute = async (operation, resource, payload) => {
+  console.log("execute ", operation, resource, payload);
 };
 
 var engine = (function () {
@@ -120,7 +107,7 @@ var engine = (function () {
       return resourceModels;
     },
     routes: () => {
-      return routes(resourceModels);
+      return routes(resourceModels, mentalConfig);
     },
     init: (config) => {
       mentalConfig = config;
@@ -138,17 +125,23 @@ var engine = (function () {
     executeApi: async function (operation, resource, { req, res, next }) {
       const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
       const afterHookPath = `${mentalConfig.hooksPath}/after_${resource}_${operation}.js`;
+      let beforeHookResult = {};
+      let afterHookResult = {};
 
-      console.log("executeApi", operation, resource);
+      // console.log("executeApi", operation, resource);
 
       if (fs.existsSync(beforeHookPath)) {
         const beforeHook = require(beforeHookPath);
-        await beforeHook(req);
+        beforeHookResult = await beforeHook(req);
       }
+
+      const payload = {};
+
+      await execute(operation, resource, payload);
 
       if (fs.existsSync(afterHookPath)) {
         const afterHook = require(afterHookPath);
-        await afterHook();
+        afterHookResult = await afterHook();
       }
 
       return {

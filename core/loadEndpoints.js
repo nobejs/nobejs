@@ -17,6 +17,10 @@ module.exports = function (app) {
           req,
           res,
           next,
+          reqBody: req.body,
+          reqParams: req.params,
+          reqQuery: req.query,
+          reqHeaders: req.Headers,
         }
       );
       return res.code(200).send(result);

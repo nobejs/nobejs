@@ -37,3 +37,7 @@ mental.execute("create_resource", "author", data);
 ```
 
 To validate, authorise, change the input or output you can use hooks which are called before and every operation.
+
+---
+
+Every Framework has a different structure for the "resource" object, and it's crucial on how this request object is optimized.
