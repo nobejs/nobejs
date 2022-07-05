@@ -36,7 +36,12 @@ module.exports = async (dbOps) => {
           case "get":
             console.log("dbOp", dbOp);
 
-            opResult = await trx(dbOp.table).where(dbOp.where).select("*");
+            opResult = await trx(dbOp.table)
+              .where(dbOp.where)
+              .orderBy(dbOp.orderBy)
+              .select("*")
+              .limit(dbOp.limit)
+              .offset(dbOp.offset);
             break;
         }
       }

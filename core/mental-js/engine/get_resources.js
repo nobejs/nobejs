@@ -9,21 +9,21 @@ module.exports = async (
   resource,
   payload
 ) => {
-  let { resourceSpec, table, dbPayload, primaryKeys, dbOps } =
+  let { resourceSpec, table, dbPayload, primaryKeys, dbOps, directAttributes } =
     gettingStartedPayload({ resourceModels, operation, resource, payload });
 
   const per_page = parseInt(payload.per_page || resourceSpec.per_page || 10);
   const page = parseInt(payload.page || resourceSpec.per_page || 1);
-  const sort_column =
-    payload.sort_column || resourceSpec.sort_column || primaryKeys[0];
-  const sort_order = payload.sort_order || resourceSpec.sort_order || "desc";
+  const sort = (
+    payload.sort ||
+    resourceSpec.sort ||
+    `${primaryKeys[0]}:desc`
+  ).split("*");
 
-  /**
-     * knex('users').orderBy([
-  { column: 'email' }, 
-  { column: 'age', order: 'desc', nulls: 'first' }
-])
-     */
+  let orderBy = sort.map((s) => {
+    let split = s.split(":");
+    return { column: split[0], order: split[1], nulls: "first" };
+  });
 
   dbOps.push({
     table: table,
@@ -31,8 +31,7 @@ module.exports = async (
     where: {},
     limit: per_page,
     offset: (page - 1) * per_page,
-    sort_column,
-    sort_order,
+    orderBy,
   });
 
   let result = await runDbOps(dbOps);

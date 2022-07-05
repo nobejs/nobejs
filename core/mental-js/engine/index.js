@@ -196,6 +196,10 @@ var engine = (function () {
       columns.push("include");
       columns.push("per_page");
       columns.push("page");
+      columns.push("sort");
+
+      console.log("req", req.query);
+
       let payload = findKeysFromRequest(req, columns);
 
       const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;

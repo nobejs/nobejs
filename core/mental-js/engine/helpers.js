@@ -229,10 +229,17 @@ const gettingStartedPayload = ({
   );
   dbPayload = augmentedPayload;
   const primaryKeys = findPrimaryKey(resourceSpec);
-
+  const directAttributes = getDirectAttributes(resourceSpec);
   let dbOps = [];
 
-  return { resourceSpec, table, dbPayload, primaryKeys, dbOps };
+  return {
+    directAttributes,
+    resourceSpec,
+    table,
+    dbPayload,
+    primaryKeys,
+    dbOps,
+  };
 };
 
 module.exports = {

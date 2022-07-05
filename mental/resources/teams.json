@@ -5,8 +5,7 @@
   "sql_table": "teams",
   "soft_delete": true,
   "page": 1,
-  "sort_column": "title",
-  "sort_order": "desc",
+  "sort": "created_at:asc",
   "attributes": [
     {
       "name": "uuid",
