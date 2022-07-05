@@ -7,18 +7,20 @@ const augmentPayloadWithAutomaticAttributes = (
   operation,
   payload
 ) => {
-  const attributes = getAutomaticAttributes(resourceSpec, operation);
+  const directAttributes = getDirectAttributes(resourceSpec);
+  payload = pickKeysFromObject(payload, directAttributes);
+  const autoAttributes = getAutomaticAttributes(resourceSpec, operation);
 
-  for (let index = 0; index < attributes.length; index++) {
-    const attribute = attributes[index];
+  for (let index = 0; index < autoAttributes.length; index++) {
+    const autoAttribute = autoAttributes[index];
 
-    switch (attribute.type) {
+    switch (autoAttribute.type) {
       case "uuid":
-        payload[attribute.name] = uuid.v4();
+        payload[autoAttribute.name] = uuid.v4();
         break;
 
       case "datetime":
-        payload[attribute.name] = new Date().toISOString();
+        payload[autoAttribute.name] = new Date().toISOString();
         break;
 
       default:
@@ -55,7 +57,7 @@ const getAttributes = (resourceSpec) => {
   return columns;
 };
 
-const getColumnsFromAttributes = (resourceSpec) => {
+const getDirectAttributes = (resourceSpec) => {
   let columns = resourceSpec.attributes
     .filter((c) => {
       return c.type !== "relation";
@@ -219,6 +221,6 @@ module.exports = {
   findPrimaryKey,
   augmentWithBelongsTo,
   augmentWithManyToMany,
-  getColumnsFromAttributes,
+  getDirectAttributes,
   augmentPayloadWithAutomaticAttributes,
 };

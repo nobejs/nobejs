@@ -30,19 +30,22 @@ module.exports = async (
 
   let dbOps = [];
 
+  let updateWhere = pickKeysFromObject(dbPayload, primaryKeys);
+
   dbOps.push({
     table: table,
-    operation: "create",
+    operation: "update",
     payload: dbPayload,
+    where: updateWhere,
   });
 
-  let getWhere = pickKeysFromObject(dbPayload, primaryKeys);
+  //   let getWhere = pickKeysFromObject(dbPayload, primaryKeys);
 
-  dbOps.push({
-    table: table,
-    operation: "get",
-    where: getWhere,
-  });
+  //   dbOps.push({
+  //     table: table,
+  //     operation: "get",
+  //     where: getWhere,
+  //   });
 
   let result = await runDbOps(dbOps);
 

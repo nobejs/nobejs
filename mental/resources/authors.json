@@ -19,7 +19,12 @@
     {
       "name": "team_uuid",
       "label": "Team",
-      "type": "uuid"
+      "type": "relation",
+      "relation": {
+        "type": "belongs_to",
+        "resource": "team",
+        "db_column": "team_uuid"
+      }
     },
     {
       "name": "created_at",

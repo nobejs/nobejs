@@ -17,6 +17,13 @@ module.exports = async (dbOps) => {
               .returning("*");
             break;
 
+          case "update":
+            opResult = await trx(dbOp.table)
+              .where(dbOp.where)
+              .update(dbOp.payload)
+              .returning("*");
+            break;
+
           case "get":
             opResult = await trx(dbOp.table).where(dbOp.where).select("*");
             break;
