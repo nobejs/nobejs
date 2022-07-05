@@ -1,5 +1,6 @@
 {
   "name": "post",
+  "api_endpoint": "posts",
   "sql_table": "posts",
   "label": "Posts",
   "attributes": [
@@ -39,7 +40,7 @@
       "name": "published_at",
       "label": "Published at",
       "type": "datetime",
-      "value": "fn:now"
+      "value": "fn::now"
     },
     {
       "name": "body",
@@ -53,6 +54,9 @@
     }
   ],
   "hooks": {
-    "afterCreate": "createCamsRequest"
+    "beforeCreateResource": "",
+    "afterCreateResource": "",
+    "beforeCreateResources": "",
+    "afterCreateResources": ""
   }
 }

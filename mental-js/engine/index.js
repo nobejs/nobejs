@@ -37,22 +37,46 @@ const init = () => {
 };
 
 const routes = (models) => {
-  const resources = Object.keys(models);
+  const resources = Object.values(models);
   const apiEndpoints = [];
 
   let crudPaths = [
-    { method: "get", path: "/$resources", operation: "get_resources" },
-    { method: "post", path: "/$resources", operation: "create_resource" },
-    { method: "get", path: "/$resources/:uuid", operation: "get_resource" },
-    { method: "put", path: "/$resources/:uuid", operation: "update_resource" },
+    {
+      method: "post",
+      path: "/$api_endpoint/_bulk",
+      operation: "create_resources",
+    },
+    {
+      method: "put",
+      path: "/$api_endpoint/_bulk",
+      operation: "update_resources",
+    },
     {
       method: "patch",
-      path: "/$resources/:uuid",
+      path: "/$api_endpoint/_bulk",
+      operation: "patch_resources",
+    },
+    {
+      method: "delete",
+      path: "/$api_endpoint/_bulk",
+      operation: "delete_resources",
+    },
+    { method: "get", path: "/$api_endpoint", operation: "get_resources" },
+    { method: "get", path: "/$api_endpoint/:uuid", operation: "get_resource" },
+    { method: "post", path: "/$api_endpoint", operation: "create_resource" },
+    {
+      method: "put",
+      path: "/$api_endpoint/:uuid",
+      operation: "update_resource",
+    },
+    {
+      method: "patch",
+      path: "/$api_endpoint/:uuid",
       operation: "patch_resource",
     },
     {
       method: "delete",
-      path: "/$resources/:uuid",
+      path: "/$api_endpoint/:uuid",
       operation: "delete_resource",
     },
   ];
@@ -72,10 +96,13 @@ const routes = (models) => {
       const crudPath = crudPaths[crudPathCounter];
 
       apiEndpoints.push({
-        resource: resource,
+        resource: resource.name,
         method: crudPath.method,
-        path: crudPath.path.replace("$resource", resource),
-        operation: crudPath.operation.replace("$resource", resource),
+        path: crudPath.path.replace(
+          "$api_endpoint",
+          resource.api_endpoint || resource.name
+        ),
+        operation: crudPath.operation,
       });
     }
   }
@@ -94,16 +121,25 @@ var engine = (function () {
     routes: () => {
       return routes(resourceModels);
     },
-    init: (resourcesPath) => {
-      let resources = fs.readdirSync(resourcesPath);
+    init: (config) => {
+      let resources = fs.readdirSync(config.resourcesPath);
       resources.forEach((resource) => {
-        const resourcePath = path.resolve(`${resourcesPath}/${resource}`);
+        const resourcePath = path.resolve(
+          `${config.resourcesPath}/${resource}`
+        );
         let resourceData = JSON.parse(fs.readFileSync(resourcePath, "utf-8"));
-
         if (resourceData.name) {
           resourceModels[resourceData.name] = resourceData;
         }
       });
+    },
+    executeApi: function (operation, resource, { req, res, next }) {
+      console.log("executeApi", operation, resource);
+
+      return {
+        operation,
+        resource,
+      };
     },
     addFunction: function (name, inplaceFunction) {
       customFunctions[name] = inplaceFunction;

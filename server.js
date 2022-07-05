@@ -1,14 +1,17 @@
 const Config = require("./config")();
 const httpServer = requireHttpServer();
 const path = require("path");
-const mentalEngine = require("./mental-nodejs/engine");
+const mentalEngine = require("./mental-js/engine");
 
 mentalEngine.addFunction("uniqueForAuthor", (payload) => {
   console.log("I am custom validator", payload);
   return true;
 });
 
-mentalEngine.init(path.resolve(`mental-nobejs/resources`));
+mentalEngine.init({
+  resourcesPath: path.resolve(`mental/resources`),
+  hooksPath: path.resolve(`mental/hooks`),
+});
 
 const server = httpServer({});
 

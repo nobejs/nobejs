@@ -10,7 +10,7 @@ const validator = requireValidator();
 // const updateResource = require("./updateResource");
 // const getResource = require("./getResource");
 // const validate = require("./validate");
-const mentalEngine = require("../../mental-nodejs/engine");
+const mentalEngine = require("../../mental-js/engine");
 
 // mental.createResource("type",data);
 // mental.updateResource("type", identifier, data)
@@ -22,9 +22,9 @@ const executeViaApi = async (operation, resource, { req, res, next }) => {
   try {
     const payload = cleanRequestObject(resourceModels, resource, req);
 
-    if (["create_resource", "update_resource"].includes(operation)) {
-      await validate(resourceModels, resource, payload);
-    }
+    // if (["create_resource", "update_resource"].includes(operation)) {
+    //   await validate(resourceModels, resource, payload);
+    // }
 
     let result;
 
