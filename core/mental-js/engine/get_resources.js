@@ -49,6 +49,8 @@ module.exports = async (
   }
 
   console.log("filters", filters);
+  // Sort filter keys alphabetically
+  // Prepare base 64 encode
 
   dbOps.push({
     table: table,

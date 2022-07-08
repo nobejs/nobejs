@@ -38,9 +38,13 @@ const routes = (models, mentalConfig) => {
       path: "/$api_endpoint/_bulk",
       operation: "delete_resources",
     },
-    { method: "get", path: "/$api_endpoint", operation: "get_resources" },
-    { method: "get", path: "/$api_endpoint/:uuid", operation: "get_resource" },
+    {
+      method: "post",
+      path: "/$api_endpoint/_filter",
+      operation: "get_resources",
+    },
     { method: "post", path: "/$api_endpoint", operation: "create_resource" },
+    { method: "get", path: "/$api_endpoint/:uuid", operation: "get_resource" },
     {
       method: "put",
       path: "/$api_endpoint/:uuid",

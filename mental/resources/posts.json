@@ -37,16 +37,6 @@
       }
     },
     {
-      "name": "creator",
-      "label": "Author",
-      "type": "relation",
-      "relation": {
-        "type": "belong_to",
-        "resource": "author",
-        "db_column": "author_uuid"
-      }
-    },
-    {
       "name": "categories",
       "label": "Categories",
       "type": "relation",
