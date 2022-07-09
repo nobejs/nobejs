@@ -195,6 +195,14 @@ var engine = (function () {
     executeApi: async function (operation, resource, { req, res, next }) {
       let attributes = resourceModels[resource]["attributes"];
       let columns = attributes.map((c) => {
+        if (
+          c.type === "relation" &&
+          c.relation &&
+          c.relation.type === "belongs_to"
+        ) {
+          return c.relation.db_column;
+        }
+
         return `${c.name}`;
       });
       columns.push("include");
@@ -205,7 +213,7 @@ var engine = (function () {
 
       let payload = findKeysFromRequest(req, columns);
 
-      console.log("payload --- ", payload);
+      // console.log("payload --- ", columns, payload);
 
       const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
       let beforeHookResult = {};

@@ -213,6 +213,22 @@ const cleanRequestObject = (resourceModels, resource, req) => {
   return payload;
 };
 
+const findATypeOfRelationships = (resourceSpec, relationshipType) => {
+  let attributes = resourceSpec.attributes.filter((c) => {
+    return (
+      c.type === "relation" &&
+      c.relation &&
+      c.relation.type === relationshipType
+    );
+  });
+
+  return attributes;
+};
+
+const findBelongsToRelationships = (resourceSpec) => {
+  return findATypeOfRelationships(resourceSpec, "belongs_to");
+};
+
 const gettingStartedPayload = ({
   resourceModels,
   operation,
@@ -221,18 +237,33 @@ const gettingStartedPayload = ({
 }) => {
   let resourceSpec = resourceModels[resource];
   let table = resourceSpec["db_identifier"];
-  let dbPayload = {};
-  let augmentedPayload = augmentPayloadWithAutomaticAttributes(
+  let belongsToRelations = findBelongsToRelationships(resourceSpec);
+  let dbPayload = augmentPayloadWithAutomaticAttributes(
     resourceSpec,
     operation,
     payload
   );
-  dbPayload = augmentedPayload;
+
+  for (
+    let belongsToRelationIndex = 0;
+    belongsToRelationIndex < belongsToRelations.length;
+    belongsToRelationIndex++
+  ) {
+    const belongsToRelation = belongsToRelations[belongsToRelationIndex];
+    if (belongsToRelation.relation && belongsToRelation.relation.db_column) {
+      if (payload[belongsToRelation.relation.db_column] !== undefined) {
+        dbPayload[belongsToRelation.relation.db_column] =
+          payload[belongsToRelation.relation.db_column];
+      }
+    }
+  }
+
   const primaryKeys = findPrimaryKey(resourceSpec);
   const directAttributes = getDirectAttributes(resourceSpec);
   let dbOps = [];
 
   return {
+    belongsToRelations,
     directAttributes,
     resourceSpec,
     table,

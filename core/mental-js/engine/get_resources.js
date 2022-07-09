@@ -23,7 +23,7 @@ module.exports = async (
   const selectColumns = directAttributes.map((m) => `${table}.${m}`);
 
   let orderBy = sort.map((s) => {
-    return { column: s.attribute, order: s.order, nulls: "first" };
+    return { column: s.attribute, order: s.order, nulls: "last" };
   });
 
   console.log("orderBy", orderBy);

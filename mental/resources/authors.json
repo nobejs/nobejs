@@ -17,6 +17,11 @@
       "type": "string"
     },
     {
+      "name": "status",
+      "label": "Status",
+      "type": "string"
+    },
+    {
       "name": "team_uuid",
       "label": "Team",
       "type": "relation",
