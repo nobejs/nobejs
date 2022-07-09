@@ -1,7 +1,7 @@
 {
   "name": "category",
   "api_endpoint": "categories",
-  "sql_table": "categories",
+  "db_identifier": "categories",
   "label": "Categories",
   "attributes": [
     {

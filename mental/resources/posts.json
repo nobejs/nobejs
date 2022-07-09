@@ -1,8 +1,9 @@
 {
   "name": "post",
-  "api_endpoint": "posts",
-  "sql_table": "posts",
   "label": "Posts",
+  "api_endpoint": "posts",
+  "db_identifier": "posts",
+  "soft_delete": false,
   "attributes": [
     {
       "name": "uuid",
@@ -27,36 +28,22 @@
       "type": "object"
     },
     {
-      "name": "creator",
-      "label": "Author",
-      "type": "relation",
-      "relation": {
-        "type": "belong_to",
-        "resource": "author",
-        "db_column": "author_uuid"
-      }
-    },
-    {
-      "name": "categories",
-      "label": "Categories",
-      "type": "relation",
-      "relation": "manyToMany",
-      "resource": "category",
-      "pivot_table": "category_posts",
-      "source_column": "post_uuid",
-      "relations_column": "category_uuid"
-    },
-    {
-      "name": "published_at",
-      "label": "Published at",
+      "name": "created_at",
       "type": "datetime",
-      "value": "fn::now"
+      "label": "created_at",
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "updated_at",
+      "type": "datetime",
+      "label": "updated_at",
+      "automatic": ["create_resource", "update_resource"]
+    },
+    {
+      "name": "deleted_at",
+      "type": "datetime",
+      "label": "deleted_at",
+      "automatic": ["delete_resource"]
     }
-  ],
-  "hooks": {
-    "beforeCreateResource": "",
-    "afterCreateResource": "",
-    "beforeCreateResources": "",
-    "afterCreateResources": ""
-  }
+  ]
 }

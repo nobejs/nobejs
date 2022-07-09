@@ -177,7 +177,7 @@ const augmentWithManyToMany = (
           // When an relationship is sent, it's possible, the corresponding resource also should be created
           // Todo - We should validate this payload
           dbOps.push({
-            table: resourceModels[relation.resource]["sql_table"],
+            table: resourceModels[relation.resource]["db_identifier"],
             operation: "create_many_to_many_resource",
             source_column: relation["source_column"],
             relations_column: relation["relations_column"],
@@ -220,7 +220,7 @@ const gettingStartedPayload = ({
   payload,
 }) => {
   let resourceSpec = resourceModels[resource];
-  let table = resourceSpec["sql_table"];
+  let table = resourceSpec["db_identifier"];
   let dbPayload = {};
   let augmentedPayload = augmentPayloadWithAutomaticAttributes(
     resourceSpec,

@@ -4,7 +4,7 @@ const { augmentWithBelongsTo, augmentWithManyToMany } = require("./helpers");
 
 const updateResource = async (resourceModels, resourceSpec, payload) => {
   let attributes = resourceSpec["attributes"];
-  let table = resourceSpec["sql_table"];
+  let table = resourceSpec["db_identifier"];
 
   let columns = getColumnsFromAttributes(resourceSpec);
 

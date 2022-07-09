@@ -203,9 +203,9 @@ var engine = (function () {
       columns.push("sort");
       columns.push("filters");
 
-      console.log("req", req.query);
-
       let payload = findKeysFromRequest(req, columns);
+
+      console.log("payload --- ", payload);
 
       const beforeHookPath = `${mentalConfig.hooksPath}/before_${resource}_${operation}.js`;
       let beforeHookResult = {};

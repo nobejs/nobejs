@@ -14,38 +14,34 @@ module.exports = async (
 
   const per_page = parseInt(payload.per_page || resourceSpec.per_page || 10);
   const page = parseInt(payload.page || resourceSpec.per_page || 1);
-  const sort = (
-    payload.sort ||
-    resourceSpec.sort ||
-    `${primaryKeys[0]}:desc`
-  ).split("*");
+
+  // let
+
+  const sort = payload.sort ||
+    resourceSpec.sort || [{ attribute: primaryKeys[0], order: "desc" }];
 
   const selectColumns = directAttributes.map((m) => `${table}.${m}`);
 
   let orderBy = sort.map((s) => {
-    let split = s.split(":");
-    return { column: split[0], order: split[1], nulls: "first" };
+    return { column: s.attribute, order: s.order, nulls: "first" };
   });
+
+  console.log("orderBy", orderBy);
 
   // https://hasura.io/docs/latest/graphql/core/databases/postgres/queries/query-filters/
 
   let filters = [];
 
   if (payload.filters !== undefined) {
-    filters = (payload.filters || ``).split("*");
+    filters = payload.filters || [];
 
-    filters = filters
-      .filter((f) => {
-        return f !== "";
-      })
-      .map((f) => {
-        let split = f.split("$");
-        return {
-          column: split[0].toLowerCase(),
-          op: split[1],
-          value: split[2],
-        };
-      });
+    filters = filters.map((f) => {
+      return {
+        column: f.attribute.toLowerCase(),
+        op: f.op,
+        value: f.value,
+      };
+    });
   }
 
   console.log("filters", filters);

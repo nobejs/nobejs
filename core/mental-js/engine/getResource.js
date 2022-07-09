@@ -4,7 +4,7 @@ const { findPrimaryKey, getColumnsFromAttributes } = require("./helpers");
 
 const getResource = async (resourceModels, resourceSpec, payload) => {
   let attributes = resourceSpec["attributes"];
-  let table = resourceSpec["sql_table"];
+  let table = resourceSpec["db_identifier"];
 
   let columns = getColumnsFromAttributes(resourceSpec);
 
@@ -41,7 +41,7 @@ const getResource = async (resourceModels, resourceSpec, payload) => {
 
         const primaryKey = findPrimaryKey(resourceModels[relation.resource]);
 
-        let result = await knex(relationSpec.sql_table)
+        let result = await knex(relationSpec.db_identifier)
           .whereIn(primaryKey, pivotValues)
           .select(getColumnsFromAttributes(relationSpec));
 

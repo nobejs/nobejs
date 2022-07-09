@@ -34,7 +34,8 @@ module.exports = async (dbOps) => {
             break;
 
           case "get":
-            console.log("dbOp", dbOp);
+            // console.log("dbOp", dbOp);
+
             const filters = dbOp.filters;
             let dataBuilder = trx(dbOp.table);
             let totalBuilder = trx(dbOp.table);

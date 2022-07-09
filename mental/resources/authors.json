@@ -2,7 +2,7 @@
   "name": "author",
   "label": "Authors",
   "api_endpoint": "authors",
-  "sql_table": "authors",
+  "db_identifier": "authors",
   "attributes": [
     {
       "name": "uuid",

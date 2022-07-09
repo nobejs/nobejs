@@ -2,10 +2,9 @@
   "name": "team",
   "label": "Teams",
   "api_endpoint": "teams",
-  "sql_table": "teams",
+  "db_identifier": "teams",
   "soft_delete": true,
-  "page": 1,
-  "sort": "created_at:asc",
+  "sort": [{ "attribute": "updated_at", "order": "desc" }],
   "attributes": [
     {
       "name": "uuid",
