@@ -9,3 +9,16 @@ Mental sounds like a dream, we started knowing how tough it is. But in the end, 
 Mental will blow you away, once you get a hang of it, you will never go back to write so much code. You will love developing apps again because Mental takes your unnecessary stress and gives you back Mental space to do what matters - Focus on architecture!
 
 When more times goes into architecture - and architecture is where it ends, without need to write code, that's magic.
+
+---
+
+First of all, What is Mental?
+
+- Mental is a specification, That's it. Just like GraphQL is a specification. It suggests principles, standards, some algorithms on how to write APIs, build backends.
+- But is a specification enough? Obviously not.
+- You need implementation. But in which programming language?
+- Implementation needs two parts:
+  - Mental Engine (The actual implementation of Mental Spec)
+  - The Output of Mental Engine is a list of actions which you can perform against you are persistence.
+  - So, you need another implementation based on the database you have
+  - So, we implemented, mental-knex (Which is implementation which will help you store in postgres, mysql etc.,)

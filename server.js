@@ -1,20 +1,42 @@
 const Config = require("./config")();
 const httpServer = requireHttpServer();
 const path = require("path");
-const mentalEngine = require("./core/mental-js/engine");
+const mentalEngine = require("./core/mental-knexjs-operator/engine");
+const mental = require("./core/mental-js/engine/index");
 
 mentalEngine.addFunction("uniqueForAuthor", (payload) => {
   console.log("I am custom validator", payload);
   return true;
 });
 
-mentalEngine.init({
+const server = httpServer({});
+
+mental.init({
   resourcesPath: path.resolve(`mental/resources`),
-  hooksPath: path.resolve(`mental/hooks`),
-  // mentalApiPrefix: "",
+  apiPrefix: "/mental-js",
 });
 
-const server = httpServer({});
+mental.resolvePayload(async (mentalRoute, frameworkData) => {
+  return frameworkData.reqBody;
+});
+
+mental.resolveUser(async (mentalRoute, frameworkData) => {
+  return "*";
+});
+
+const routes = mental.generateRoutes();
+
+routes.forEach((mentalRoute) => {
+  server[mentalRoute.method](mentalRoute.path, async (req, res, next) => {
+    let result = await mental.executeRoute(mentalRoute, {
+      reqBody: req.body,
+      reqParams: req.params,
+      reqQuery: req.query,
+      reqHeaders: req.Headers,
+    });
+    return res.code(200).send(result);
+  });
+});
 
 server.listen(
   { port: process.env.PORT || 3000, host: "0.0.0.0" },
