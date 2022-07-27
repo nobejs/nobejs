@@ -4,11 +4,6 @@ const path = require("path");
 const mentalEngine = require("./core/mental-knexjs-operator/engine");
 const mental = require("./core/mental-js/engine/index");
 
-mentalEngine.addFunction("uniqueForAuthor", (payload) => {
-  console.log("I am custom validator", payload);
-  return true;
-});
-
 const server = httpServer({});
 
 mental.init({
@@ -22,6 +17,11 @@ mental.resolvePayload(async (mentalRoute, frameworkData) => {
 
 mental.resolveUser(async (mentalRoute, frameworkData) => {
   return "*";
+});
+
+mental.addFunction("uniqueForAuthor", async (payload) => {
+  console.log("I am custom validator", payload);
+  return true;
 });
 
 const routes = mental.generateRoutes();

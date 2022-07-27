@@ -1,0 +1,76 @@
+{
+  "name": "states",
+  "label": "States",
+  "create_operations": [
+    "check_if_current_user_has_permissions_to_create",
+    "get_payload_from_request",
+    "validate_name_is_present_in_payload",
+    "generate_slug_from_name",
+    "generate_uuid",
+    "generate_created_at_and_updated_at",
+    "insert_in_database",
+    "fetch_record_using_uuid",
+    "convert_created_at_to_ymd",
+    "convert_updated_at_to_ymd",
+    "return_response"
+  ],
+  "update_operations": [
+    "get_payload_from_request",
+    "check_if_where_attributes_are_present",
+    "if_name_is_in_payload_check_if_its_unique_excluding_this_record",
+    "if_slug_is_in_payload_check_if_its_unique_excluding_this_record",
+    "generate_updated_at",
+    "update_in_database",
+    "fetch_record_using_uuid",
+    "convert_created_at_to_ymd",
+    "convert_updated_at_to_ymd",
+    "return_response"
+  ],
+  "delete_operations": [
+    "get_payload_from_request",
+    "check_if_where_attributes_are_present",
+    "if_name_is_in_payload_check_if_its_unique_excluding_this_record",
+    "if_slug_is_in_payload_check_if_its_unique_excluding_this_record",
+    "generate_updated_at",
+    "update_in_database",
+    "fetch_record_using_uuid",
+    "convert_created_at_to_ymd",
+    "convert_updated_at_to_ymd",
+    "return_response"
+  ],
+  "attributes": [
+    {
+      "identifier": "uuid",
+      "label": "UUID",
+      "create_operations": ["generate::uuid"]
+    },
+    {
+      "identifier": "name",
+      "label": "Name",
+      "create_operations": ["validate::required", "validate::unique"],
+      "update_operations": ["validate::required", "validate::unique"]
+    },
+    {
+      "identifier": "slug",
+      "label": "Slug",
+      "create_operations": ["validate::unique", "generate::slug"],
+      "operations": ["validate::unique", "generate::slug"]
+    },
+    {
+      "identifier": "created_at",
+      "label": "created_at",
+      "create_operations": ["generate::datetime"]
+    },
+    {
+      "identifier": "updated_at",
+      "label": "updated_at",
+      "create_operations": ["generate::datetime"],
+      "update_operations": ["generate::datetime"]
+    },
+    {
+      "identifier": "deleted_at",
+      "label": "deleted_at",
+      "delete_operations": ["generate::datetime"]
+    }
+  ]
+}

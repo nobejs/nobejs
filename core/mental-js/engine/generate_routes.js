@@ -46,10 +46,7 @@ const routes = (models, mentalConfig) => {
         method: crudPath.method,
         path:
           mentalApiPrefix +
-          crudPath.path.replace(
-            "$api_endpoint",
-            resource.api_endpoint || resource.name
-          ),
+          crudPath.path.replace("$api_endpoint", resource.name),
         operation: crudPath.operation,
       });
     }

@@ -9,7 +9,7 @@
       "type": "uuid",
       "label": "ID",
       "primary": true,
-      "automatic": ["create_resource"]
+      "logic": [{ "action": "common" }]
     },
     {
       "name": "name",

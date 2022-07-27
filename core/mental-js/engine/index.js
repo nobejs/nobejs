@@ -4,6 +4,13 @@ const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const generateRoutes = require("./generate_routes");
 
 const executeAction = async (resource, action, permissions, payload) => {
+  const customFunctions = engine.getCustomFunctions();
+  console.log("en", customFunctions);
+
+  // await customFunctions["uniqueForAuthor"].apply(null, [
+  //   { resource, action, permissions, payload },
+  // ]);
+
   return { resource, action, permissions, payload };
 };
 
@@ -13,7 +20,11 @@ var engine = (function () {
   let mentalConfig = {};
   let resolvePayload = undefined;
   let resolveUser = undefined;
+  const customFunctions = {};
   return {
+    getCustomFunctions: () => {
+      return customFunctions;
+    },
     getResourceModels: () => {
       return resourceModels;
     },
@@ -52,6 +63,9 @@ var engine = (function () {
     },
     executeAction: async (resource, action, permissions, payload) => {
       return await executeAction(resource, action, permissions, payload);
+    },
+    addFunction: function (name, inplaceFunction) {
+      customFunctions[name] = inplaceFunction;
     },
   };
 })();

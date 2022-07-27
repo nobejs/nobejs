@@ -1,17 +1,22 @@
 {
   "name": "team",
   "label": "Teams",
-  "api_endpoint": "teams",
-  "db_identifier": "teams",
   "soft_delete": true,
   "sort": [{ "attribute": "updated_at", "order": "desc" }],
+  "meta": {
+    "db_identifier": "teams"
+  },
+  "conditions": {
+    "required": ["title"],
+    "unique": ["title"]
+  },
   "attributes": [
     {
       "name": "uuid",
       "type": "uuid",
       "label": "ID",
       "primary": true,
-      "automatic": ["create_resource"]
+      "automatic": ["create"]
     },
     {
       "name": "title",
@@ -27,19 +32,19 @@
       "name": "created_at",
       "type": "datetime",
       "label": "created_at",
-      "automatic": ["create_resource"]
+      "automatic": ["create"]
     },
     {
       "name": "updated_at",
       "type": "datetime",
       "label": "updated_at",
-      "automatic": ["create_resource", "update_resource"]
+      "automatic": ["create", "update"]
     },
     {
       "name": "deleted_at",
       "type": "datetime",
       "label": "deleted_at",
-      "automatic": ["delete_resource"]
+      "automatic": ["delete"]
     }
   ]
 }
