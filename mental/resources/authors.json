@@ -1,0 +1,53 @@
+{
+  "name": "author",
+  "label": "Authors",
+  "api_endpoint": "authors",
+  "db_identifier": "authors",
+  "attributes": [
+    {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "ID",
+      "primary": true,
+      "logic": [{ "action": "common" }]
+    },
+    {
+      "name": "name",
+      "label": "Name",
+      "type": "string"
+    },
+    {
+      "name": "status",
+      "label": "Status",
+      "type": "string"
+    },
+    {
+      "name": "team_uuid",
+      "label": "Team",
+      "type": "relation",
+      "relation": {
+        "type": "belongs_to",
+        "resource": "team",
+        "db_column": "team_uuid"
+      }
+    },
+    {
+      "name": "created_at",
+      "type": "datetime",
+      "label": "created_at",
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "updated_at",
+      "type": "datetime",
+      "label": "updated_at",
+      "automatic": ["create_resource", "update_resource"]
+    },
+    {
+      "name": "deleted_at",
+      "type": "datetime",
+      "label": "deleted_at",
+      "automatic": ["delete_resource"]
+    }
+  ]
+}

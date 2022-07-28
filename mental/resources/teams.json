@@ -1,0 +1,50 @@
+{
+  "name": "team",
+  "label": "Teams",
+  "soft_delete": true,
+  "sort": [{ "attribute": "updated_at", "order": "desc" }],
+  "meta": {
+    "db_identifier": "teams"
+  },
+  "conditions": {
+    "required": ["title"],
+    "unique": ["title"]
+  },
+  "attributes": [
+    {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "ID",
+      "primary": true,
+      "automatic": ["create"]
+    },
+    {
+      "name": "title",
+      "label": "Title",
+      "type": "string"
+    },
+    {
+      "name": "meta",
+      "label": "Meta",
+      "type": "object"
+    },
+    {
+      "name": "created_at",
+      "type": "datetime",
+      "label": "created_at",
+      "automatic": ["create"]
+    },
+    {
+      "name": "updated_at",
+      "type": "datetime",
+      "label": "updated_at",
+      "automatic": ["create", "update"]
+    },
+    {
+      "name": "deleted_at",
+      "type": "datetime",
+      "label": "deleted_at",
+      "automatic": ["delete"]
+    }
+  ]
+}

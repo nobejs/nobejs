@@ -1,0 +1,49 @@
+{
+  "name": "post",
+  "label": "Posts",
+  "api_endpoint": "posts",
+  "db_identifier": "posts",
+  "soft_delete": false,
+  "attributes": [
+    {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "Identifier",
+      "primary": true,
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "label": "Title"
+    },
+    {
+      "name": "body",
+      "type": "text",
+      "label": "Body"
+    },
+    {
+      "name": "meta",
+      "label": "Meta",
+      "type": "object"
+    },
+    {
+      "name": "created_at",
+      "type": "datetime",
+      "label": "created_at",
+      "automatic": ["create_resource"]
+    },
+    {
+      "name": "updated_at",
+      "type": "datetime",
+      "label": "updated_at",
+      "automatic": ["create_resource", "update_resource"]
+    },
+    {
+      "name": "deleted_at",
+      "type": "datetime",
+      "label": "deleted_at",
+      "automatic": ["delete_resource"]
+    }
+  ]
+}

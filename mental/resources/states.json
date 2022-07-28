@@ -1,0 +1,82 @@
+{
+  "name": "states",
+  "label": "States",
+  "primary": ["uuid"],
+  "meta": {
+    "table": "states"
+  },
+  "attributes": [
+    {
+      "identifier": "uuid",
+      "label": "UUID",
+      "operations": {
+        "create": {
+          "generate": "uuid",
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "regex",
+              "value": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "name",
+      "label": "Name",
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "states",
+              "includeAttributes": [],
+              "excludeAttributes": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "slug",
+      "label": "Slug",
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "states",
+              "includeAttributes": [],
+              "excludeAttributes": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "created_at",
+      "label": "created_at",
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
+    },
+    {
+      "identifier": "updated_at",
+      "label": "updated_at",
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
+    },
+    {
+      "identifier": "deleted_at",
+      "label": "deleted_at"
+    }
+  ]
+}

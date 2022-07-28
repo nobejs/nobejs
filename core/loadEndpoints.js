@@ -2,8 +2,31 @@ const Config = require("../config")();
 const endpoints = Config.load(Config["endpoints"]);
 const responseKey = Config["responseKey"];
 const generateApiPath = requireUtil("generateApiPath");
+const mental = require("./mental-knexjs-operator/engine");
 
 module.exports = function (app) {
+  const mentalRoutes = mental.routes();
+  // console.log("mentalRoutes", mentalRoutes);
+
+  // mentalRoutes.forEach((mentalRoute) => {
+  //   app[mentalRoute.method](mentalRoute.path, async (req, res, next) => {
+  //     let result = await mental.executeApi(
+  //       mentalRoute.operation,
+  //       mentalRoute.resource,
+  // {
+  //   req,
+  //   res,
+  //   next,
+  //   reqBody: req.body,
+  //   reqParams: req.params,
+  //   reqQuery: req.query,
+  //   reqHeaders: req.Headers,
+  // }
+  //     );
+  //     return res.code(200).send(result);
+  //   });
+  // });
+
   const apis = endpoints(app);
   apis.forEach((api) => {
     api.endpoints.forEach((endpoint, i) => {

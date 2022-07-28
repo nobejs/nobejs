@@ -1,0 +1,107 @@
+{
+  "name": "cities",
+  "label": "Cities",
+  "primary": ["uuid"],
+  "meta": {
+    "table": "cities"
+  },
+  "attributes": [
+    {
+      "identifier": "uuid",
+      "label": "UUID",
+      "operations": {
+        "create": {
+          "generate": "uuid",
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "regex",
+              "value": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "name",
+      "label": "Name",
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "cities",
+              "includeAttributes": ["state_uuid"],
+              "excludeAttributes": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "slug",
+      "label": "Slug",
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "cities",
+              "includeAttributes": [],
+              "excludeAttributes": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "state_uuid",
+      "label": "State",
+      "relation": {
+        "type": "belongs_to_one",
+        "resource": "state"
+      },
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "exists",
+              "table": "states",
+              "column": "uuid"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "created_at",
+      "label": "created_at",
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
+    },
+    {
+      "identifier": "updated_at",
+      "label": "updated_at",
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
+    },
+    {
+      "identifier": "deleted_at",
+      "label": "deleted_at",
+      "operations": {
+        "delete": {
+          "generate": "uuid"
+        }
+      }
+    }
+  ]
+}

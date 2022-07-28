@@ -1,0 +1,23 @@
+{
+  "name": "category",
+  "api_endpoint": "categories",
+  "db_identifier": "categories",
+  "label": "Categories",
+  "attributes": [
+    {
+      "name": "uuid",
+      "type": "uuid",
+      "label": "Identifier",
+      "primary": true,
+      "value": "fn:uuid"
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "label": "Title",
+      "description": "This would be the title of the category",
+      "validators": ["required"]
+    }
+  ],
+  "hooks": {}
+}
