@@ -24,9 +24,18 @@ module.exports = async (resourceSpec, mentalAction) => {
       return `${c.identifier}`;
     });
 
+  // console.log("before cleaning", payload);
+
+  let otherKeys = [];
+
+  if (mentalAction.action === "read") {
+    otherKeys = ["limitBy", "sortBy", "filterBy"];
+  }
+
   payload = pickKeysFromObject(payload, [
     ...directColumns,
     ...belongsToOneColumns,
+    ...otherKeys,
   ]);
 
   mentalAction["payload"] = payload;

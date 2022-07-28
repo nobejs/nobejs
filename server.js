@@ -79,13 +79,26 @@ const dbOps = async (dbOps) => {
                   );
                   break;
 
+                case "eq":
+                  dataBuilder = dataBuilder.where(
+                    filter.column,
+                    "=",
+                    `${filter.value}`
+                  );
+                  totalBuilder = totalBuilder.where(
+                    filter.column,
+                    "=",
+                    `${filter.value}`
+                  );
+                  break;
+
                 default:
                   break;
               }
             }
 
             let dataResult = await dataBuilder
-              .orderBy(dbOp.orderBy)
+              .orderBy(dbOp.sortBy)
               .select(dbOp.selectColumns)
               .limit(dbOp.limit)
               .offset(dbOp.offset);

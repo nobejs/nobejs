@@ -24,18 +24,35 @@ module.exports = async (mentalAction, resourceSpec) => {
   }
 
   if (action === "read") {
-    operations.push({
-      resourceSpec: resourceSpec,
-      operation: "insert",
-      payload: payload,
+    let limitBy = mentalAction.payload.limitBy || { page: 1, per_page: 1 };
+    let filterBy = mentalAction.payload.filterBy || [];
+    let sortBy = mentalAction.payload.sortBy || [];
+    const table = resourceSpec.meta.table;
+
+    const selectColumns = mentalAction.directColumns.map(
+      (m) => `${table}.${m}`
+    );
+
+    filters = filterBy.map((f) => {
+      return {
+        column: f.attribute.toLowerCase(),
+        op: f.op,
+        value: f.value,
+      };
     });
 
-    let getWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
+    sortBy = sortBy.map((s) => {
+      return { column: s.attribute, order: s.order, nulls: "last" };
+    });
 
     operations.push({
       resourceSpec: resourceSpec,
-      operation: "select_first",
-      where: getWhere,
+      operation: "get",
+      filters: filters,
+      selectColumns: selectColumns,
+      limit: limitBy.per_page,
+      offset: (limitBy.page - 1) * limitBy.per_page,
+      sortBy,
     });
   }
 
