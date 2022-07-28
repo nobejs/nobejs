@@ -42,35 +42,46 @@
     {
       "identifier": "uuid",
       "label": "UUID",
-      "create_operations": ["generate::uuid"]
+      "operations": {
+        "create": {
+          "generate": "uuid"
+        }
+      }
     },
     {
       "identifier": "name",
       "label": "Name",
-      "create_operations": ["validate::required", "validate::unique"],
-      "update_operations": ["validate::required", "validate::unique"]
+      "operations": {
+        "create": {
+          "validate": ["required", "unique"]
+        }
+      }
     },
     {
       "identifier": "slug",
-      "label": "Slug",
-      "create_operations": ["validate::unique", "generate::slug"],
-      "operations": ["validate::unique", "generate::slug"]
+      "label": "Slug"
     },
     {
       "identifier": "created_at",
       "label": "created_at",
-      "create_operations": ["generate::datetime"]
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
     },
     {
       "identifier": "updated_at",
       "label": "updated_at",
-      "create_operations": ["generate::datetime"],
-      "update_operations": ["generate::datetime"]
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
     },
     {
       "identifier": "deleted_at",
-      "label": "deleted_at",
-      "delete_operations": ["generate::datetime"]
+      "label": "deleted_at"
     }
   ]
 }

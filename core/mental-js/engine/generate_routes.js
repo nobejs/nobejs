@@ -8,22 +8,22 @@ const routes = (models, mentalConfig) => {
     {
       method: "post",
       path: "/$api_endpoint/_create",
-      operation: "create",
+      action: "create",
     },
     {
       method: "post",
       path: "/$api_endpoint/_update",
-      operation: "update",
+      action: "update",
     },
     {
       method: "post",
       path: "/$api_endpoint/_delete",
-      operation: "delete",
+      action: "delete",
     },
     {
       method: "post",
       path: "/$api_endpoint/_read",
-      operation: "read",
+      action: "read",
     },
   ];
 
@@ -47,7 +47,7 @@ const routes = (models, mentalConfig) => {
         path:
           mentalApiPrefix +
           crudPath.path.replace("$api_endpoint", resource.name),
-        operation: crudPath.operation,
+        action: crudPath.action,
       });
     }
   }

@@ -19,6 +19,11 @@ mental.resolveUser(async (mentalRoute, frameworkData) => {
   return "*";
 });
 
+mental.checkBack(async (mentalAction, event) => {
+  // console.log("check back event -- ", mentalAction, event);
+  return mentalAction;
+});
+
 mental.addFunction("uniqueForAuthor", async (payload) => {
   console.log("I am custom validator", payload);
   return true;

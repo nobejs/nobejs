@@ -9,6 +9,10 @@ module.exports = (app) => {
     return res.code(200).send({ status: "I am ready" });
   });
 
+  app.post("/mirror", async (req, res) => {
+    return res.code(200).send(req.body);
+  });
+
   return [
     {
       endpoints: [],
