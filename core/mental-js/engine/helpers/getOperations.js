@@ -29,9 +29,10 @@ module.exports = async (mentalAction, resourceSpec) => {
     let sortBy = mentalAction.payload.sortBy || [];
     const table = resourceSpec.meta.table;
 
-    const selectColumns = mentalAction.directColumns.map(
-      (m) => `${table}.${m}`
-    );
+    const selectColumns = [
+      ...mentalAction.directColumns,
+      ...mentalAction.belongsToOneColumns,
+    ].map((m) => `${table}.${m}`);
 
     filters = filterBy.map((f) => {
       return {
