@@ -36,8 +36,12 @@ var engine = (function () {
   let resolvePayload = undefined;
   let resolveUser = undefined;
   let checkBack = undefined;
+  let operatorCountAll = undefined;
   const customFunctions = {};
   return {
+    operatorCountAll: () => {
+      return operatorCountAll;
+    },
     getCustomFunctions: () => {
       return customFunctions;
     },

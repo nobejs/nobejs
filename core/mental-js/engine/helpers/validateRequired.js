@@ -44,6 +44,15 @@ module.exports = async (attributes, mentalAction) => {
             )}`,
           };
         }
+
+        if (validator.type === "within") {
+          constraints[attribute.identifier]["unique"] = {
+            message: "Something",
+            table: "states",
+            where: {},
+            whereNot: {},
+          };
+        }
       }
     }
   }

@@ -25,7 +25,13 @@
         "create": {
           "validate": [
             { "type": "required" },
-            { "type": "within", "value": ["Telangana", "Andhra Pradesh"] }
+            { "type": "within", "value": ["Telangana", "Andhra Pradesh"] },
+            {
+              "type": "unique",
+              "table": "states",
+              "includeAttributes": [],
+              "excludeAttributes": []
+            }
           ]
         }
       }

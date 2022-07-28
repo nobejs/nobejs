@@ -3,12 +3,17 @@ const httpServer = requireHttpServer();
 const path = require("path");
 const mentalEngine = require("./core/mental-knexjs-operator/engine");
 const mental = require("./core/mental-js/engine/index");
+const baseRepo = requireUtil("baseRepo");
 
 const server = httpServer({});
 
 mental.init({
   resourcesPath: path.resolve(`mental/resources`),
   apiPrefix: "/mental-js",
+});
+
+mental.operatorCountAll(async (meta, where = {}, whereNot = {}) => {
+  return await baseRepo.countAll(table, where, whereNot);
 });
 
 mental.resolvePayload(async (mentalRoute, frameworkData) => {
