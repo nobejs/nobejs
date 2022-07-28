@@ -18,7 +18,8 @@
     "db:migration": "ENVFILE=.env knex migrate:make",
     "release": "gh release create",
     "bump": "npm version patch --git-tag-version=false && node core/syncVersion.js && git commit -am 'Commit version.md' && git push origin master --tags",
-    "bump:minor": "npm version minor"
+    "bump:minor": "npm version minor",
+    "postversion": "node core/syncVersion.js && git commit -am 'Commit version.md' && git push origin master --tags && git push --follow-tags"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
