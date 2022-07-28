@@ -1,4 +1,5 @@
 const generate = require("../helpers/generate");
+const validateRequired = require("../helpers/validateRequired");
 
 module.exports = async (
   mentalAction,
@@ -13,12 +14,8 @@ module.exports = async (
   // Start Prepare
   {
     mentalAction = await checkBack(mentalAction, "before_prepare");
-
-    mentalAction = await generate(attributes, mentalAction);
-
-    console.log("mentalAction", mentalAction);
-
     // We have to first perform the "generate" operations
+    mentalAction = await generate(attributes, mentalAction);
     mentalAction = await checkBack(mentalAction, "after_prepare");
   }
   // --------------- End Prepare
@@ -44,11 +41,11 @@ module.exports = async (
   // --------------- End Authorization
 
   // Start Validation
-
-  mentalAction = await checkBack(mentalAction, "before_validation");
-
-  mentalAction = await checkBack(mentalAction, "after_validation");
-
+  {
+    mentalAction = await checkBack(mentalAction, "before_validation");
+    mentalAction = await validateRequired(attributes, mentalAction);
+    mentalAction = await checkBack(mentalAction, "after_validation");
+  }
   // --------------- End Validation
 
   // Start Handling

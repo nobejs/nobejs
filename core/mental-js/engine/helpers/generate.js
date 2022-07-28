@@ -1,4 +1,5 @@
 var uuid = require("uuid");
+const { resolveByDot } = require("./utils");
 
 const generateAttribute = (type) => {
   switch (type) {
@@ -22,14 +23,11 @@ module.exports = async (attributes, mentalAction) => {
 
   for (forIndex = 0; forIndex < attributes.length; forIndex++) {
     const attribute = attributes[forIndex];
-    if (attribute.operations && attribute.operations[action]) {
-      for (let index = 0; index < payload.length; index++) {
-        const item = payload[index];
-        item[attribute.identifier] = generateAttribute(
-          attribute.operations[action].generate
-        );
-        payload[index] = item;
-      }
+
+    if (resolveByDot(`operations.${action}.generate`, attribute)) {
+      payload[attribute.identifier] = generateAttribute(
+        attribute.operations[action].generate
+      );
     }
   }
 
