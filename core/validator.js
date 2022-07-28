@@ -1,6 +1,41 @@
 var validate = require("validate.js");
 const knex = requireKnex();
 
+validate.validators.exists = function (
+  value,
+  options,
+  key,
+  attributes,
+  constraints
+) {
+  return new validate.Promise(async function (resolve, reject) {
+    try {
+      let count = 0;
+
+      try {
+        let rows = await knex(options.table)
+          .where(options.where)
+          .whereNot(options.whereNot)
+          .whereNull("deleted_at")
+          .count({ count: "*" })
+          .first();
+        count = parseInt(rows.count);
+      } catch (error) {
+        throw error;
+      }
+
+      if (count > 0) {
+        return resolve();
+      }
+
+      return resolve("^" + options["message"]);
+    } catch (error) {
+      console.log("error", error);
+      resolve("^" + options["message"]);
+    }
+  });
+};
+
 validate.validators.unique = function (
   value,
   options,

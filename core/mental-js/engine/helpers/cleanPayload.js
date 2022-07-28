@@ -16,10 +16,22 @@ module.exports = async (resourceSpec, mentalAction) => {
       return `${c.identifier}`;
     });
 
-  payload = pickKeysFromObject(payload, directColumns);
+  let belongsToOneColumns = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "belongs_to_one";
+    })
+    .map((c) => {
+      return `${c.identifier}`;
+    });
+
+  payload = pickKeysFromObject(payload, [
+    ...directColumns,
+    ...belongsToOneColumns,
+  ]);
 
   mentalAction["payload"] = payload;
   mentalAction["directColumns"] = directColumns;
+  mentalAction["belongsToOneColumns"] = belongsToOneColumns;
   mentalAction["primaryColumns"] = resourceSpec.primary;
 
   return mentalAction;

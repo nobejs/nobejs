@@ -23,5 +23,21 @@ module.exports = async (mentalAction, resourceSpec) => {
     });
   }
 
+  if (action === "read") {
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "insert",
+      payload: payload,
+    });
+
+    let getWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
+
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "select_first",
+      where: getWhere,
+    });
+  }
+
   return operations;
 };

@@ -3,6 +3,7 @@ const path = require("path");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const generateRoutes = require("./generate_routes");
 const createAction = require("./actions/create");
+const readAction = require("./actions/read");
 
 const executeAction = async (
   mentalAction,
@@ -10,7 +11,9 @@ const executeAction = async (
   mentalConfig,
   checkBack
 ) => {
-  const customFunctions = engine.getCustomFunctions();
+  console.log("executeAction");
+
+  // const customFunctions = engine.getCustomFunctions();
   // console.log("en", customFunctions);
 
   // await customFunctions["uniqueForAuthor"].apply(null, [
@@ -26,7 +29,16 @@ const executeAction = async (
     );
   }
 
-  return mentalAction;
+  if (mentalAction.action === "read") {
+    return await createAction(
+      mentalAction,
+      resourceModels,
+      mentalConfig,
+      checkBack
+    );
+  }
+
+  return { respondResult: mentalAction };
 };
 
 var engine = (function () {

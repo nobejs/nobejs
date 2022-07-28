@@ -29,7 +29,6 @@
         "create": {
           "validate": [
             { "type": "required" },
-            { "type": "within", "value": ["Telangana", "Andhra Pradesh"] },
             {
               "type": "unique",
               "table": "states",
@@ -45,7 +44,15 @@
       "label": "Slug",
       "operations": {
         "create": {
-          "validate": [{ "type": "required" }]
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "states",
+              "includeAttributes": [],
+              "excludeAttributes": []
+            }
+          ]
         }
       }
     },

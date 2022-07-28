@@ -1,65 +1,107 @@
 {
-  "name": "states",
-  "label": "States",
-  "create_operations": [
-    "has_permission:create",
-    "resolve_payload:framework_data",
-    "validate::required:name",
-    "validate::required:state_uuid",
-    "validate::unique:name,state_uuid",
-    "generate::slug:slug,name",
-    "generate::uuid:uuid",
-    "generate_created_at_and_updated_at",
-    "generate_persistence_operations",
-    "fetch_record_using_uuid",
-    "convert_state_uuid_to_state",
-    "convert_created_at_to_ymd",
-    "convert_updated_at_to_ymd",
-    "return_response"
-  ],
+  "name": "cities",
+  "label": "Cities",
+  "primary": ["uuid"],
+  "meta": {
+    "table": "cities"
+  },
   "attributes": [
     {
       "identifier": "uuid",
       "label": "UUID",
-      "create_operations": ["generate::uuid"]
+      "operations": {
+        "create": {
+          "generate": "uuid",
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "regex",
+              "value": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          ]
+        }
+      }
     },
     {
       "identifier": "name",
       "label": "Name",
-      "create_operations": ["validate::required", "validate::unique"],
-      "update_operations": ["validate::required", "validate::unique"]
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "cities",
+              "includeAttributes": ["state_uuid"],
+              "excludeAttributes": []
+            }
+          ]
+        }
+      }
     },
     {
       "identifier": "slug",
       "label": "Slug",
-      "create_operations": ["validate::unique", "generate::slug"],
-      "operations": ["validate::unique", "generate::slug"]
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "unique",
+              "table": "cities",
+              "includeAttributes": [],
+              "excludeAttributes": []
+            }
+          ]
+        }
+      }
     },
     {
-      "identifier": "state",
+      "identifier": "state_uuid",
       "label": "State",
-      "create_operations": ["validate::required"],
       "relation": {
-        "type": "belongs_to",
-        "resource": "state",
-        "db_column": "state_uuid"
+        "type": "belongs_to_one",
+        "resource": "state"
+      },
+      "operations": {
+        "create": {
+          "validate": [
+            { "type": "required" },
+            {
+              "type": "exists",
+              "table": "states",
+              "column": "uuid"
+            }
+          ]
+        }
       }
     },
     {
       "identifier": "created_at",
       "label": "created_at",
-      "create_operations": ["generate::datetime"]
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
     },
     {
       "identifier": "updated_at",
       "label": "updated_at",
-      "create_operations": ["generate::datetime"],
-      "update_operations": ["generate::datetime"]
+      "operations": {
+        "create": {
+          "generate": "datetime"
+        }
+      }
     },
     {
       "identifier": "deleted_at",
       "label": "deleted_at",
-      "delete_operations": ["generate::datetime"]
+      "operations": {
+        "delete": {
+          "generate": "uuid"
+        }
+      }
     }
   ]
 }
