@@ -5,8 +5,6 @@ module.exports = async (mentalAction, resourceSpec) => {
   let payload = mentalAction.payload;
   let action = mentalAction.action;
 
-  console.log("payload", payload);
-
   if (action === "create") {
     operations.push({
       resourceSpec: resourceSpec,
