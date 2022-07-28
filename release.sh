@@ -10,7 +10,7 @@ PACKAGE_VERSION=$(cat package.json \
 
 echo $PACKAGE_VERSION
 
-cp="gh release create v$PACKAGE_VERSION --notes \"v$PACKAGE_VERSION\" -p"
+cp="gh release create v$PACKAGE_VERSION --notes \"v$PACKAGE_VERSION\""
 
 echo $cp
 
