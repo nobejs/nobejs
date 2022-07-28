@@ -24,11 +24,7 @@ validate.validators.unique = function (
         throw error;
       }
 
-      console.log("count", count);
-
-      let result = true;
-
-      if (result === true) {
+      if (count === 0) {
         return resolve();
       }
 

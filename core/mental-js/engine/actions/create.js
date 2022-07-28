@@ -1,5 +1,7 @@
 const generate = require("../helpers/generate");
-const validateRequired = require("../helpers/validateRequired");
+const validate = require("../helpers/validate");
+const cleanPayload = require("../helpers/cleanPayload");
+const getOperations = require("../helpers/getOperations");
 
 module.exports = async (
   mentalAction,
@@ -14,6 +16,7 @@ module.exports = async (
   // Start Prepare
   {
     mentalAction = await checkBack(mentalAction, "before_prepare");
+    mentalAction = await cleanPayload(resourceSpec, mentalAction);
     // We have to first perform the "generate" operations
     mentalAction = await generate(attributes, mentalAction);
     mentalAction = await checkBack(mentalAction, "after_prepare");
@@ -43,7 +46,7 @@ module.exports = async (
   // Start Validation
   {
     mentalAction = await checkBack(mentalAction, "before_validation");
-    mentalAction = await validateRequired(attributes, mentalAction);
+    mentalAction = await validate(attributes, mentalAction);
     mentalAction = await checkBack(mentalAction, "after_validation");
   }
   // --------------- End Validation
@@ -52,6 +55,14 @@ module.exports = async (
 
   mentalAction = await checkBack(mentalAction, "before_handling");
 
+  const operations = await getOperations(mentalAction, resourceSpec);
+
+  console.log("operations", operations);
+
+  let opResult = await mentalConfig.operator(operations);
+
+  mentalAction["opResult"] = opResult;
+
   mentalAction = await checkBack(mentalAction, "after_handling");
 
   // --------------- End Handling
@@ -59,7 +70,7 @@ module.exports = async (
   // Start Respond
 
   mentalAction = await checkBack(mentalAction, "before_respond");
-
+  mentalAction["respondResult"] = mentalAction["opResult"];
   mentalAction = await checkBack(mentalAction, "after_respond");
 
   // --------------- End Respond

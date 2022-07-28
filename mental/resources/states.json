@@ -1,6 +1,10 @@
 {
   "name": "states",
   "label": "States",
+  "primary": ["uuid"],
+  "meta": {
+    "table": "states"
+  },
   "attributes": [
     {
       "identifier": "uuid",
@@ -38,7 +42,12 @@
     },
     {
       "identifier": "slug",
-      "label": "Slug"
+      "label": "Slug",
+      "operations": {
+        "create": {
+          "validate": [{ "type": "required" }]
+        }
+      }
     },
     {
       "identifier": "created_at",

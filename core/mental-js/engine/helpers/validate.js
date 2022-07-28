@@ -7,11 +7,6 @@ module.exports = async (attributes, mentalAction) => {
   let forIndex = 0;
   const constraints = {};
 
-  // required
-  // within
-  // regex
-  // unique - select count(*) from where ....
-
   for (forIndex = 0; forIndex < attributes.length; forIndex++) {
     const attribute = attributes[forIndex];
     const validators = resolveByDot(`operations.${action}.validate`, attribute);
@@ -45,19 +40,20 @@ module.exports = async (attributes, mentalAction) => {
           };
         }
 
-        if (validator.type === "within") {
+        if (validator.type === "unique") {
+          let where = {};
+          where[attribute.identifier] = payload[attribute.identifier];
+
           constraints[attribute.identifier]["unique"] = {
-            message: "Something",
-            table: "states",
-            where: {},
+            message: `${attribute.identifier} should be unique.`,
+            table: validator.table,
+            where: where,
             whereNot: {},
           };
         }
       }
     }
   }
-
-  //   console.log("constraints", constraints, payload);
 
   try {
     let validatorResult = await validator(payload, constraints);
