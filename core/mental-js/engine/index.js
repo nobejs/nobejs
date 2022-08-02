@@ -5,12 +5,7 @@ const generateRoutes = require("./generate_routes");
 const createAction = require("./actions/create");
 const readAction = require("./actions/read");
 
-const executeAction = async (
-  mentalAction,
-  resourceModels,
-  mentalConfig,
-  checkBack
-) => {
+const executeAction = async (mentalAction, resourceModels, mentalConfig) => {
   console.log("executeAction");
 
   // const customFunctions = engine.getCustomFunctions();
@@ -21,21 +16,11 @@ const executeAction = async (
   // ]);
 
   if (mentalAction.action === "create") {
-    return await createAction(
-      mentalAction,
-      resourceModels,
-      mentalConfig,
-      checkBack
-    );
+    return await createAction(mentalAction, resourceModels, mentalConfig);
   }
 
   if (mentalAction.action === "read") {
-    return await createAction(
-      mentalAction,
-      resourceModels,
-      mentalConfig,
-      checkBack
-    );
+    return await createAction(mentalAction, resourceModels, mentalConfig);
   }
 
   return { respondResult: mentalAction };
@@ -47,7 +32,6 @@ var engine = (function () {
   let mentalConfig = {};
   let resolvePayload = undefined;
   let resolveUser = undefined;
-  let checkBack = undefined;
   let operatorCountAll = undefined;
   const customFunctions = {};
   return {
@@ -69,9 +53,7 @@ var engine = (function () {
     resolveUser: (fn) => {
       resolveUser = fn;
     },
-    checkBack: (fn) => {
-      checkBack = fn;
-    },
+
     executeRoute: async (mentalRoute, frameworkData) => {
       const permissions = await resolveUser(mentalRoute, frameworkData);
       const payload = await resolvePayload(mentalRoute, frameworkData);
@@ -84,8 +66,7 @@ var engine = (function () {
           payload,
         },
         resourceModels,
-        mentalConfig,
-        checkBack
+        mentalConfig
       );
       return result;
     },

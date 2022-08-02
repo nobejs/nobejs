@@ -20,10 +20,6 @@ module.exports = (server) => {
     return "*";
   });
 
-  mental.checkBack(async (mentalAction, event) => {
-    return mentalAction;
-  });
-
   mental.addFunction("uniqueForAuthor", async (payload) => {
     console.log("I am custom validator", payload);
     return true;
