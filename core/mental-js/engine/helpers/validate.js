@@ -1,7 +1,11 @@
 const validator = requireValidator();
 const { resolveByDot } = require("./utils");
 
-module.exports = async (attributes, mentalAction) => {
+const validate = async (context) => {
+  const { mentalAction, resourceModels, mentalConfig } = context;
+  const resourceSpec = resourceModels[mentalAction.resource];
+  const attributes = resourceSpec.attributes;
+
   let payload = mentalAction.payload;
   let action = mentalAction.action;
   let forIndex = 0;
@@ -108,5 +112,9 @@ module.exports = async (attributes, mentalAction) => {
     throw error;
   }
 
-  return mentalAction;
+  context.mentalAction = mentalAction;
+
+  return context;
 };
+
+module.exports = validate;

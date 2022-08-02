@@ -2,8 +2,13 @@ var uuid = require("uuid");
 const { resolveByDot } = require("./utils");
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 
-module.exports = async (resourceSpec, mentalAction) => {
-  let attributes = resourceSpec.attributes;
+const cleanPayload = async (context) => {
+  // console.log("Called cleanPayload", context);
+
+  const { mentalAction, resourceModels, mentalConfig } = context;
+  const resourceSpec = resourceModels[mentalAction.resource];
+  const attributes = resourceSpec.attributes;
+
   let payload = mentalAction.payload;
   let action = mentalAction.action;
   let forIndex = 0;
@@ -42,6 +47,9 @@ module.exports = async (resourceSpec, mentalAction) => {
   mentalAction["directColumns"] = directColumns;
   mentalAction["belongsToOneColumns"] = belongsToOneColumns;
   mentalAction["primaryColumns"] = resourceSpec.primary;
+  context.mentalAction = mentalAction;
 
-  return mentalAction;
+  return context;
 };
+
+module.exports = cleanPayload;

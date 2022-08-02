@@ -3,40 +3,14 @@ const validate = require("../helpers/validate");
 const cleanPayload = require("../helpers/cleanPayload");
 const getOperations = require("../helpers/getOperations");
 const executeSequence = require("../helpers/executeSequence");
+const enhanceWithHooks = require("../helpers/enhanceWithHooks");
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+module.exports = async (context) => {
+  const { mentalAction, resourceModels, mentalConfig } = context;
 
-module.exports = async (mentalAction, resourceModels, mentalConfig) => {
-  const resourceSpec = resourceModels[mentalAction.resource];
-  const attributes = resourceSpec.attributes;
-  let forIndex = 0;
+  const authorize = (context) => {
+    const { mentalAction } = context;
 
-  await executeSequence(["b", "c"]);
-
-  const requiredHooks = require(mentalConfig.hooksPath);
-
-  const beforePrepareHook = `beforePrepare${capitalizeFirstLetter(
-    mentalAction.action
-  )}${capitalizeFirstLetter(mentalAction.resource)}`;
-
-  if (requiredHooks[beforePrepareHook]) {
-    mentalAction = await requiredHooks[beforePrepareHook](mentalAction);
-  }
-
-  console.log("mentalAction", beforePrepareHook);
-
-  // Start Prepare
-  {
-    mentalAction = await cleanPayload(resourceSpec, mentalAction);
-    // We have to first perform the "generate" operations
-    mentalAction = await generate(attributes, mentalAction);
-  }
-  // --------------- End Prepare
-
-  // Start Authorization
-  {
     const requiredBasicPermission = `${mentalAction.action}_${mentalAction.resource}`;
 
     if (
@@ -48,34 +22,28 @@ module.exports = async (mentalAction, resourceModels, mentalConfig) => {
         message: "Forbidden",
       };
     }
-  }
-  // --------------- End Authorization
 
-  // Start Validation
-  {
-    mentalAction = await validate(attributes, mentalAction);
-  }
-  // --------------- End Validation
+    return context;
+  };
 
-  // Start Handling
-  {
-    const operations = await getOperations(mentalAction, resourceSpec);
-
-    console.log("operations", operations);
-
+  const runOperations = async (context) => {
+    const { mentalAction, resourceModels, mentalConfig } = context;
+    const { operations } = mentalAction;
     let opResult = await mentalConfig.operator(operations);
-
     mentalAction["opResult"] = opResult;
-  }
-  // --------------- End Handling
+    context.mentalAction = mentalAction;
+    return context;
+  };
 
-  // Start Respond
-  {
-    mentalAction["respondResult"] = mentalAction["opResult"];
-  }
-  // --------------- End Respond
+  const sequence = await enhanceWithHooks(context, {
+    prepare: [cleanPayload, generate],
+    authorize: [authorize],
+    validate: [validate],
+    handle: [getOperations, runOperations],
+    respond: [],
+  });
 
-  // console.log("mentalAction", mentalAction);
+  context = await executeSequence(context, sequence);
 
-  return mentalAction;
+  return { respondResult: context.mentalAction["opResult"] };
 };

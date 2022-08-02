@@ -16,7 +16,10 @@ const generateAttribute = (type) => {
   }
 };
 
-module.exports = async (attributes, mentalAction) => {
+const generate = async (context) => {
+  const { mentalAction, resourceModels, mentalConfig } = context;
+  const resourceSpec = resourceModels[mentalAction.resource];
+  const attributes = resourceSpec.attributes;
   let payload = mentalAction.payload;
   let action = mentalAction.action;
   let forIndex = 0;
@@ -31,7 +34,8 @@ module.exports = async (attributes, mentalAction) => {
     }
   }
 
-  mentalAction["payload"] = payload;
-
-  return mentalAction;
+  context.mentalAction = mentalAction;
+  return context;
 };
+
+module.exports = generate;

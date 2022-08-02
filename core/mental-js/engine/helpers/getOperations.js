@@ -1,6 +1,10 @@
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 
-module.exports = async (mentalAction, resourceSpec) => {
+const getOperations = async (context) => {
+  const { mentalAction, resourceModels, mentalConfig } = context;
+  const resourceSpec = resourceModels[mentalAction.resource];
+  const attributes = resourceSpec.attributes;
+
   const operations = [];
   let payload = mentalAction.payload;
   let action = mentalAction.action;
@@ -55,5 +59,11 @@ module.exports = async (mentalAction, resourceSpec) => {
     });
   }
 
-  return operations;
+  mentalAction["operations"] = operations;
+
+  context.mentalAction = mentalAction;
+
+  return context;
 };
+
+module.exports = getOperations;

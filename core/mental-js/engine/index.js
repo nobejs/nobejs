@@ -5,7 +5,9 @@ const generateRoutes = require("./generate_routes");
 const createAction = require("./actions/create");
 const readAction = require("./actions/read");
 
-const executeAction = async (mentalAction, resourceModels, mentalConfig) => {
+const executeAction = async (context) => {
+  const { mentalAction } = context;
+
   console.log("executeAction");
 
   // const customFunctions = engine.getCustomFunctions();
@@ -16,11 +18,11 @@ const executeAction = async (mentalAction, resourceModels, mentalConfig) => {
   // ]);
 
   if (mentalAction.action === "create") {
-    return await createAction(mentalAction, resourceModels, mentalConfig);
+    return await createAction(context);
   }
 
   if (mentalAction.action === "read") {
-    return await createAction(mentalAction, resourceModels, mentalConfig);
+    return await createAction(context);
   }
 
   return { respondResult: mentalAction };
@@ -58,16 +60,16 @@ var engine = (function () {
       const permissions = await resolveUser(mentalRoute, frameworkData);
       const payload = await resolvePayload(mentalRoute, frameworkData);
 
-      let result = await executeAction(
-        {
+      let result = await executeAction({
+        resourceModels: resourceModels,
+        mentalConfig: mentalConfig,
+        mentalAction: {
           resource: mentalRoute.resource,
           action: mentalRoute.action,
           permissions,
           payload,
         },
-        resourceModels,
-        mentalConfig
-      );
+      });
       return result;
     },
     init: (config) => {
