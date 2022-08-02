@@ -26,6 +26,8 @@
       "identifier": "name",
       "label": "Name",
       "operations": {
+        "*": {},
+        "create,update,delete": {},
         "create": {
           "validate": [
             { "type": "required" },
@@ -34,6 +36,9 @@
               "table": "states",
               "includeAttributes": [],
               "excludeAttributes": []
+            },
+            {
+              "type": "function"
             }
           ]
         }
