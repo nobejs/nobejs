@@ -7,6 +7,7 @@ const responseKey = Config["responseKey"];
 module.exports = (server) => {
   mental.init({
     resourcesPath: path.resolve(`mental/resources`),
+    hooksPath: path.resolve(`mental/hooks/index.js`),
     apiPrefix: "/mental",
     operator: dbOps,
   });

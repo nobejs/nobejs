@@ -91,6 +91,9 @@
       "operations": {
         "create": {
           "generate": "datetime"
+        },
+        "update": {
+          "generate": "datetime"
         }
       }
     },

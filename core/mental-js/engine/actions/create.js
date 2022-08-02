@@ -3,6 +3,10 @@ const validate = require("../helpers/validate");
 const cleanPayload = require("../helpers/cleanPayload");
 const getOperations = require("../helpers/getOperations");
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 module.exports = async (
   mentalAction,
   resourceModels,
@@ -13,9 +17,21 @@ module.exports = async (
   const attributes = resourceSpec.attributes;
   let forIndex = 0;
 
+  const requiredHooks = require(mentalConfig.hooksPath);
+
+  const beforePrepareHook = `beforePrepare${capitalizeFirstLetter(
+    mentalAction.action
+  )}${capitalizeFirstLetter(mentalAction.resource)}`;
+
+  if (requiredHooks[beforePrepareHook]) {
+    mentalAction = await requiredHooks[beforePrepareHook](mentalAction);
+  }
+
+  console.log("mentalAction", beforePrepareHook);
+
   // Start Prepare
   {
-    mentalAction = await checkBack(mentalAction, "before_prepare");
+    mentalAction = await checkBack(mentalAction, "beforePrepare");
     mentalAction = await cleanPayload(resourceSpec, mentalAction);
     // We have to first perform the "generate" operations
     mentalAction = await generate(attributes, mentalAction);
@@ -52,27 +68,27 @@ module.exports = async (
   // --------------- End Validation
 
   // Start Handling
+  {
+    mentalAction = await checkBack(mentalAction, "before_handling");
 
-  mentalAction = await checkBack(mentalAction, "before_handling");
+    const operations = await getOperations(mentalAction, resourceSpec);
 
-  const operations = await getOperations(mentalAction, resourceSpec);
+    console.log("operations", operations);
 
-  console.log("operations", operations);
+    let opResult = await mentalConfig.operator(operations);
 
-  let opResult = await mentalConfig.operator(operations);
+    mentalAction["opResult"] = opResult;
 
-  mentalAction["opResult"] = opResult;
-
-  mentalAction = await checkBack(mentalAction, "after_handling");
-
+    mentalAction = await checkBack(mentalAction, "after_handling");
+  }
   // --------------- End Handling
 
   // Start Respond
-
-  mentalAction = await checkBack(mentalAction, "before_respond");
-  mentalAction["respondResult"] = mentalAction["opResult"];
-  mentalAction = await checkBack(mentalAction, "after_respond");
-
+  {
+    mentalAction = await checkBack(mentalAction, "before_respond");
+    mentalAction["respondResult"] = mentalAction["opResult"];
+    mentalAction = await checkBack(mentalAction, "after_respond");
+  }
   // --------------- End Respond
 
   // console.log("mentalAction", mentalAction);
