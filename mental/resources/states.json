@@ -26,7 +26,6 @@
       "identifier": "name",
       "label": "Name",
       "operations": {
-        "*": {},
         "create,update": {
           "validate": [
             { "type": "required" },
@@ -37,9 +36,6 @@
               "excludeAttributes": []
             }
           ]
-        },
-        "create": {
-          "validate": []
         }
       }
     },
@@ -77,14 +73,19 @@
       "identifier": "updated_at",
       "label": "updated_at",
       "operations": {
-        "create": {
+        "create,update": {
           "generate": "datetime"
         }
       }
     },
     {
       "identifier": "deleted_at",
-      "label": "deleted_at"
+      "label": "deleted_at",
+      "operations": {
+        "delete": {
+          "generate": "datetime"
+        }
+      }
     }
   ]
 }
