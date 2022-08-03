@@ -22,18 +22,32 @@ const generate = async (context) => {
   const attributes = resourceSpec.attributes;
   let payload = mentalAction.payload;
   let action = mentalAction.action;
+
+  const attributesWithOperations = attributes.filter((a) => {
+    return a.operations !== undefined;
+  });
+
   let forIndex = 0;
 
-  for (forIndex = 0; forIndex < attributes.length; forIndex++) {
-    const attribute = attributes[forIndex];
+  for (forIndex = 0; forIndex < attributesWithOperations.length; forIndex++) {
+    const attribute = attributesWithOperations[forIndex];
 
-    if (resolveByDot(`operations.${action}.generate`, attribute)) {
-      payload[attribute.identifier] = generateAttribute(
-        attribute.operations[action].generate
-      );
+    const operationKeys = Object.keys(attribute.operations);
+
+    for (let index = 0; index < operationKeys.length; index++) {
+      const operationKey = operationKeys[index];
+      const operationActions = operationKey.split(",");
+      if (operationActions.includes("*") || operationActions.includes(action)) {
+        if (resolveByDot(`operations.${operationKey}.generate`, attribute)) {
+          payload[attribute.identifier] = generateAttribute(
+            attribute.operations[operationKey].generate
+          );
+        }
+      }
     }
   }
 
+  mentalAction.payload = payload;
   context.mentalAction = mentalAction;
   return context;
 };

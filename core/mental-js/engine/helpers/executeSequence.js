@@ -1,5 +1,5 @@
 const executeSequence = async (context, sequence) => {
-  console.log("sequence", sequence);
+  // console.log("sequence", sequence);
 
   try {
     for (let fn of sequence) {

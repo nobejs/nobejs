@@ -27,8 +27,7 @@
       "label": "Name",
       "operations": {
         "*": {},
-        "create,update,delete": {},
-        "create": {
+        "create,update": {
           "validate": [
             { "type": "required" },
             {
@@ -36,11 +35,11 @@
               "table": "states",
               "includeAttributes": [],
               "excludeAttributes": []
-            },
-            {
-              "type": "function"
             }
           ]
+        },
+        "create": {
+          "validate": []
         }
       }
     },

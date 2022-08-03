@@ -33,7 +33,7 @@ const enhanceWithHooks = async (context, actionSequence) => {
     });
   });
 
-  console.log("Hooks--", hooks);
+  // console.log("Hooks--", hooks);
 
   return hooks;
 };
