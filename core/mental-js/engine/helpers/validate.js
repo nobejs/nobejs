@@ -1,7 +1,13 @@
 const validator = requireValidator();
 const { resolveByDot } = require("./utils");
 
-const addToConstraints = (constraints, attribute, validators, payload) => {
+const addToConstraints = (
+  constraints,
+  attribute,
+  validators,
+  payload,
+  outsideValidatorFunctions
+) => {
   constraints[attribute.identifier] = {};
 
   for (let vCounter = 0; vCounter < validators.length; vCounter++) {
@@ -87,6 +93,12 @@ const addToConstraints = (constraints, attribute, validators, payload) => {
         whereNot: whereNot,
       };
     }
+
+    if (validator.type === "custom_validator") {
+      validator["custom_validator"] =
+        outsideValidatorFunctions[validator.value];
+      constraints[attribute.identifier]["outside_function"] = validator;
+    }
   }
 
   return constraints;
@@ -96,6 +108,9 @@ const validate = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const resourceSpec = resourceModels[mentalAction.resource];
   const attributes = resourceSpec.attributes;
+  const outsideValidatorFunctions = require(mentalConfig.validatorsPath);
+
+  console.log("outsideValidatorFunctions", outsideValidatorFunctions);
 
   const attributesWithOperations = attributes.filter((a) => {
     return a.operations !== undefined;
@@ -130,7 +145,8 @@ const validate = async (context) => {
         constraints,
         attribute,
         validators,
-        payload
+        payload,
+        outsideValidatorFunctions
       );
     }
   }

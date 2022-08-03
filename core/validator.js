@@ -1,6 +1,32 @@
 var validate = require("validate.js");
 const knex = requireKnex();
 
+validate.validators.outside_function = function (
+  value,
+  options,
+  key,
+  attributes,
+  constraints
+) {
+  return new validate.Promise(async function (resolve, reject) {
+    try {
+      try {
+        let result = await options.custom_validator(value, options);
+
+        if (result === true) {
+          return resolve();
+        } else {
+          return resolve(result);
+        }
+      } catch (error) {
+        throw error;
+      }
+    } catch (error) {
+      resolve("^" + "something went wrong, couldn't validate");
+    }
+  });
+};
+
 validate.validators.exists = function (
   value,
   options,

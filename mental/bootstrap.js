@@ -8,6 +8,7 @@ module.exports = (server) => {
   mental.init({
     resourcesPath: path.resolve(`mental/resources`),
     hooksPath: path.resolve(`mental/hooks/index.js`),
+    validatorsPath: path.resolve(`mental/validators/index.js`),
     apiPrefix: "/mental",
     operator: dbOps,
   });

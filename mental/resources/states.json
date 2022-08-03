@@ -47,7 +47,7 @@
       "identifier": "slug",
       "label": "Slug",
       "operations": {
-        "create": {
+        "create,update": {
           "validate": [
             { "type": "required" },
             {
@@ -55,6 +55,10 @@
               "table": "states",
               "includeAttributes": [],
               "excludeAttributes": []
+            },
+            {
+              "type": "custom_validator",
+              "value": "noWhiteSpace"
             }
           ]
         }
