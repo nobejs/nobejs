@@ -5,9 +5,13 @@ const addToConstraints = (
   constraints,
   attribute,
   validators,
-  payload,
+  context,
   outsideValidatorFunctions
 ) => {
+  const { mentalAction } = context;
+  let payload = mentalAction.payload;
+  let action = mentalAction.action;
+
   constraints[attribute.identifier] = {};
 
   for (let vCounter = 0; vCounter < validators.length; vCounter++) {
@@ -38,8 +42,19 @@ const addToConstraints = (
     if (validator.type === "unique") {
       let where = {};
       let whereNot = {};
+
+      // if (action === "update") {
+      //   validator.excludeAttributes = [
+      //     ...mentalAction.primaryColumns,
+      //     ...validator.excludeAttributes,
+      //   ];
+
+      //   validator.excludeAttributes = [...new Set(validator.excludeAttributes)];
+      // }
+
       const includeAttributes = validator.includeAttributes;
       const excludeAttributes = validator.excludeAttributes;
+
       where[attribute.identifier] = payload[attribute.identifier];
 
       for (let index = 0; index < includeAttributes.length; index++) {
@@ -110,8 +125,6 @@ const validate = async (context) => {
   const attributes = resourceSpec.attributes;
   const outsideValidatorFunctions = require(mentalConfig.validatorsPath);
 
-  console.log("outsideValidatorFunctions", outsideValidatorFunctions);
-
   const attributesWithOperations = attributes.filter((a) => {
     return a.operations !== undefined;
   });
@@ -120,6 +133,8 @@ const validate = async (context) => {
   let action = mentalAction.action;
   let forIndex = 0;
   let constraints = {};
+
+  console.log("payload", action, payload);
 
   for (forIndex = 0; forIndex < attributesWithOperations.length; forIndex++) {
     const attribute = attributesWithOperations[forIndex];
@@ -145,7 +160,7 @@ const validate = async (context) => {
         constraints,
         attribute,
         validators,
-        payload,
+        context,
         outsideValidatorFunctions
       );
     }

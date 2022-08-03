@@ -3,6 +3,7 @@ const path = require("path");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const generateRoutes = require("./generate_routes");
 const createAction = require("./actions/create");
+const updateAction = require("./actions/update");
 const readAction = require("./actions/read");
 
 const executeAction = async (context) => {
@@ -22,7 +23,7 @@ const executeAction = async (context) => {
   }
 
   if (mentalAction.action === "update") {
-    return await createAction(context);
+    return await updateAction(context);
   }
 
   if (mentalAction.action === "read") {

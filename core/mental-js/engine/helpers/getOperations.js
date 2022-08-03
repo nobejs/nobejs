@@ -25,6 +25,23 @@ const getOperations = async (context) => {
     });
   }
 
+  if (action === "update") {
+    let updateWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
+
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "update",
+      payload: payload,
+      where: updateWhere,
+    });
+
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "select_first",
+      where: updateWhere,
+    });
+  }
+
   if (action === "read") {
     let limitBy = mentalAction.payload.limitBy || { page: 1, per_page: 1 };
     let filterBy = mentalAction.payload.filterBy || [];
