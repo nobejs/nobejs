@@ -134,7 +134,7 @@ const validate = async (context) => {
   let forIndex = 0;
   let constraints = {};
 
-  console.log("payload", action, payload);
+  // console.log("payload", action, payload);
 
   for (forIndex = 0; forIndex < attributesWithOperations.length; forIndex++) {
     const attribute = attributesWithOperations[forIndex];
