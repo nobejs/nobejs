@@ -99,7 +99,7 @@ const dbOps = async (dbOps) => {
             let totalResult = await totalBuilder.count({ count: "*" }).first();
             let total = parseInt(totalResult.count);
 
-            return { data: dataResult, total: total };
+            return { data: dataResult, meta: { total: total } };
 
             break;
         }

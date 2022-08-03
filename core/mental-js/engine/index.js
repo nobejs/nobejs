@@ -21,8 +21,12 @@ const executeAction = async (context) => {
     return await createAction(context);
   }
 
-  if (mentalAction.action === "read") {
+  if (mentalAction.action === "update") {
     return await createAction(context);
+  }
+
+  if (mentalAction.action === "read") {
+    return await readAction(context);
   }
 
   return { respondResult: mentalAction };
