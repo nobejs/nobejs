@@ -1,6 +1,6 @@
 {
   "name": "nobejs",
-  "version": "0.1.45",
+  "version": "0.1.46",
   "main": "index.js",
   "author": "Rajiv Seelam",
   "license": "MIT",
@@ -19,8 +19,7 @@
     "release": "gh release create",
     "bump": "npm version patch --git-tag-version=false && node core/syncVersion.js && git commit -am 'Commit version.md' && git push origin master --tags",
     "bump:patch": "npm version patch",
-    "bump:minor": "npm version minor",
-    "postversion": "node core/syncVersion.js && git commit -am 'Commit version.md' && git push origin master --tags && git push --follow-tags"
+    "bump:minor": "npm version minor"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
