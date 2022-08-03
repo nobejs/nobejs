@@ -1,5 +1,5 @@
 #!/bin/bash
-eval yarn bump:patch
+eval yarn bump
 
 PACKAGE_VERSION=$(cat package.json \
   | grep version \
