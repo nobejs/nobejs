@@ -80,6 +80,10 @@ var engine = (function () {
     init: (config) => {
       mentalConfig = config;
       let resources = fs.readdirSync(config.resourcesPath);
+      resources = resources.filter(
+        (e) => path.extname(e).toLowerCase() === ".json"
+      );
+
       resources.forEach((resource) => {
         const resourcePath = path.resolve(
           `${config.resourcesPath}/${resource}`
