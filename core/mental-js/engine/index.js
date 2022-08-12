@@ -5,6 +5,7 @@ const generateRoutes = require("./generate_routes");
 const createAction = require("./actions/create");
 const updateAction = require("./actions/update");
 const readAction = require("./actions/read");
+const deleteAction = require("./actions/delete");
 
 const executeAction = async (context) => {
   const { mentalAction } = context;
@@ -28,6 +29,10 @@ const executeAction = async (context) => {
 
   if (mentalAction.action === "read") {
     return await readAction(context);
+  }
+
+  if (mentalAction.action === "delete") {
+    return await deleteAction(context);
   }
 
   return { respondResult: mentalAction };

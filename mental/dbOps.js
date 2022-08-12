@@ -36,7 +36,7 @@ const dbOps = async (dbOps) => {
               .first();
             break;
 
-          case "get":
+          case "select":
             // console.log("dbOp", dbOp);
 
             const filters = dbOp.filters;

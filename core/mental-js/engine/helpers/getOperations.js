@@ -25,6 +25,15 @@ const getOperations = async (context) => {
     });
   }
 
+  if (action === "delete") {
+    let deleteWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "delete",
+      where: deleteWhere,
+    });
+  }
+
   if (action === "update") {
     let updateWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
 
@@ -67,7 +76,7 @@ const getOperations = async (context) => {
 
     operations.push({
       resourceSpec: resourceSpec,
-      operation: "get",
+      operation: "select",
       filters: filters,
       selectColumns: selectColumns,
       limit: limitBy.per_page,
