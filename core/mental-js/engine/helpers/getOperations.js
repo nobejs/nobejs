@@ -27,11 +27,21 @@ const getOperations = async (context) => {
 
   if (action === "delete") {
     let deleteWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
-    operations.push({
-      resourceSpec: resourceSpec,
-      operation: "delete",
-      where: deleteWhere,
-    });
+
+    if (resourceSpec.softDelete === true) {
+      operations.push({
+        resourceSpec: resourceSpec,
+        operation: "update",
+        payload: payload,
+        where: deleteWhere,
+      });
+    } else {
+      operations.push({
+        resourceSpec: resourceSpec,
+        operation: "delete",
+        where: deleteWhere,
+      });
+    }
   }
 
   if (action === "update") {
