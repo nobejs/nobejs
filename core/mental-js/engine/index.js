@@ -35,6 +35,12 @@ const executeAction = async (context) => {
     return await deleteAction(context);
   }
 
+  if (mentalAction.action === "config") {
+    const { resourceModels } = context;
+    const resourceSpec = resourceModels[mentalAction.resource];
+    return { respondResult: resourceSpec };
+  }
+
   return { respondResult: mentalAction };
 };
 

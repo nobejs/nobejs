@@ -25,6 +25,11 @@ const routes = (models, mentalConfig) => {
       path: "/$api_endpoint/_read",
       action: "read",
     },
+    {
+      method: "post",
+      path: "/$api_endpoint/_config",
+      action: "config",
+    },
   ];
 
   for (
