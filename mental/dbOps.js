@@ -40,12 +40,12 @@ const dbOps = async (dbOps) => {
             // console.log("dbOp", dbOp);
 
             const filters = dbOp.filters;
-            let dataBuilder = trx(dbOp.table);
-            let totalBuilder = trx(dbOp.table);
+            let dataBuilder = trx(dbOp.table).whereNull("deleted_at");
+            let totalBuilder = trx(dbOp.table).whereNull("deleted_at");
 
             for (let index = 0; index < filters.length; index++) {
               const filter = filters[index];
-              switch (filter.op) {
+              switch (filter.op.toLowerCase()) {
                 case "like":
                   dataBuilder = dataBuilder.where(
                     filter.column,
@@ -99,7 +99,7 @@ const dbOps = async (dbOps) => {
             let totalResult = await totalBuilder.count({ count: "*" }).first();
             let total = parseInt(totalResult.count);
 
-            return { data: dataResult, meta: { total: total } };
+            return { data: dataResult, total: total };
 
             break;
         }

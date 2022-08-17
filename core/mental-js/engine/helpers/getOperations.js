@@ -95,8 +95,6 @@ const getOperations = async (context) => {
     });
   }
 
-  console.log("operations", operations);
-
   mentalAction["operations"] = operations;
 
   context.mentalAction = mentalAction;
