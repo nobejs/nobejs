@@ -6,6 +6,7 @@ const createAction = require("./actions/create");
 const updateAction = require("./actions/update");
 const readAction = require("./actions/read");
 const deleteAction = require("./actions/delete");
+const deepAssign = require("./helpers/deepAssign");
 
 const executeAction = async (context) => {
   const { mentalAction } = context;
@@ -91,9 +92,11 @@ var engine = (function () {
     init: (config) => {
       mentalConfig = config;
       let resources = fs.readdirSync(config.resourcesPath);
+      let mixins = fs.readdirSync(config.mixinsPath);
       resources = resources.filter(
         (e) => path.extname(e).toLowerCase() === ".json"
       );
+      mixins = mixins.filter((e) => path.extname(e).toLowerCase() === ".json");
 
       resources.forEach((resource) => {
         const resourcePath = path.resolve(
@@ -101,6 +104,28 @@ var engine = (function () {
         );
         let resourceData = JSON.parse(fs.readFileSync(resourcePath, "utf-8"));
         if (resourceData.name) {
+          if (resourceData.mixins && resourceData.mixins.length > 0) {
+            for (let index = 0; index < resourceData.mixins.length; index++) {
+              let mixin = resourceData.mixins[index];
+              if (mixins.includes(mixin)) {
+                const mixinPath = path.resolve(`${config.mixinsPath}/${mixin}`);
+                let mixinData = JSON.parse(fs.readFileSync(mixinPath, "utf-8"));
+                resourceData = deepAssign({})(resourceData, mixinData);
+              }
+            }
+          }
+
+          if (Array.isArray(resourceData.attributes) === false) {
+            let attributesArray = [];
+
+            for (const identifier in resourceData.attributes) {
+              const attribute = resourceData.attributes[identifier];
+              attribute["identifier"] = identifier;
+              attributesArray.push(attribute);
+            }
+            resourceData.attributes = attributesArray;
+          }
+
           resourceModels[resourceData.name] = resourceData;
         }
       });
