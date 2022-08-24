@@ -10,7 +10,7 @@ const deleteAction = require("./actions/delete");
 const executeAction = async (context) => {
   const { mentalAction } = context;
 
-  console.log("executeAction");
+  // console.log("executeAction");
 
   // const customFunctions = engine.getCustomFunctions();
   // console.log("en", customFunctions);

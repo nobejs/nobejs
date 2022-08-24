@@ -7,27 +7,27 @@ const routes = (models, mentalConfig) => {
   let crudPaths = [
     {
       method: "post",
-      path: "/$api_endpoint/_create",
+      path: "/resource/$api_endpoint/_create",
       action: "create",
     },
     {
       method: "post",
-      path: "/$api_endpoint/_update",
+      path: "/resource/$api_endpoint/_update",
       action: "update",
     },
     {
       method: "post",
-      path: "/$api_endpoint/_delete",
+      path: "/resource/$api_endpoint/_delete",
       action: "delete",
     },
     {
       method: "post",
-      path: "/$api_endpoint/_read",
+      path: "/resource/$api_endpoint/_read",
       action: "read",
     },
     {
       method: "post",
-      path: "/$api_endpoint/_config",
+      path: "/resource/$api_endpoint/_config",
       action: "config",
     },
   ];
