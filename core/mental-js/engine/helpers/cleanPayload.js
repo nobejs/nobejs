@@ -3,53 +3,70 @@ const { resolveByDot } = require("./utils");
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 
 const cleanPayload = async (context) => {
-  // console.log("Called cleanPayload", context);
-
   const { mentalAction, resourceModels, mentalConfig } = context;
-  const resourceSpec = resourceModels[mentalAction.resource];
-  const attributes = resourceSpec.attributes;
 
-  let payload = mentalAction.payload;
-  let action = mentalAction.action;
-  let forIndex = 0;
+  if (mentalAction.browser) {
+    let payload = mentalAction.payload;
 
-  let directColumns = attributes
-    .filter((c) => {
-      return !c.relation;
-    })
-    .map((c) => {
-      return `${c.identifier}`;
-    });
+    let otherKeys = [];
 
-  let belongsToOneColumns = attributes
-    .filter((c) => {
-      return c.relation && c.relation.type === "belongs_to_one";
-    })
-    .map((c) => {
-      return `${c.identifier}`;
-    });
+    if (mentalAction.action === "browse") {
+      otherKeys = ["limitBy", "sortBy", "filterBy"];
+    }
 
-  // console.log("before cleaning", payload);
+    payload = pickKeysFromObject(payload, [...otherKeys]);
 
-  let otherKeys = [];
-
-  if (mentalAction.action === "read") {
-    otherKeys = ["limitBy", "sortBy", "filterBy"];
+    mentalAction["payload"] = payload;
+    context.mentalAction = mentalAction;
+    return context;
   }
 
-  payload = pickKeysFromObject(payload, [
-    ...directColumns,
-    ...belongsToOneColumns,
-    ...otherKeys,
-  ]);
+  if (mentalAction.resource) {
+    const resourceSpec = resourceModels[mentalAction.resource];
+    const attributes = resourceSpec.attributes;
 
-  mentalAction["payload"] = payload;
-  mentalAction["directColumns"] = directColumns;
-  mentalAction["belongsToOneColumns"] = belongsToOneColumns;
-  mentalAction["primaryColumns"] = resourceSpec.primary;
-  context.mentalAction = mentalAction;
+    let payload = mentalAction.payload;
+    let action = mentalAction.action;
+    let forIndex = 0;
 
-  return context;
+    let directColumns = attributes
+      .filter((c) => {
+        return !c.relation;
+      })
+      .map((c) => {
+        return `${c.identifier}`;
+      });
+
+    let belongsToOneColumns = attributes
+      .filter((c) => {
+        return c.relation && c.relation.type === "belongs_to_one";
+      })
+      .map((c) => {
+        return `${c.identifier}`;
+      });
+
+    // console.log("before cleaning", payload);
+
+    let otherKeys = [];
+
+    if (mentalAction.action === "read") {
+      otherKeys = ["limitBy", "sortBy", "filterBy"];
+    }
+
+    payload = pickKeysFromObject(payload, [
+      ...directColumns,
+      ...belongsToOneColumns,
+      ...otherKeys,
+    ]);
+
+    mentalAction["payload"] = payload;
+    mentalAction["directColumns"] = directColumns;
+    mentalAction["belongsToOneColumns"] = belongsToOneColumns;
+    mentalAction["primaryColumns"] = resourceSpec.primary;
+    context.mentalAction = mentalAction;
+
+    return context;
+  }
 };
 
 module.exports = cleanPayload;

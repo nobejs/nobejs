@@ -6,12 +6,13 @@ const createAction = require("./actions/create");
 const updateAction = require("./actions/update");
 const readAction = require("./actions/read");
 const deleteAction = require("./actions/delete");
+const browseAction = require("./actions/browse");
 const deepAssign = require("./helpers/deepAssign");
 
 const executeAction = async (context) => {
   const { mentalAction } = context;
 
-  // console.log("executeAction");
+  // console.log("executeAction", mentalAction);
 
   // const customFunctions = engine.getCustomFunctions();
   // console.log("en", customFunctions);
@@ -36,10 +37,20 @@ const executeAction = async (context) => {
     return await deleteAction(context);
   }
 
-  if (mentalAction.action === "config") {
+  if (mentalAction.action === "browse") {
+    return await browseAction(context);
+  }
+
+  if (mentalAction.action === "crud_config") {
     const { resourceModels } = context;
     const resourceSpec = resourceModels[mentalAction.resource];
     return { respondResult: resourceSpec };
+  }
+
+  if (mentalAction.action === "browser_config") {
+    const { browserModels } = context;
+    const browserSpec = browserModels[mentalAction.browser];
+    return { respondResult: browserSpec };
   }
 
   return { respondResult: mentalAction };
@@ -48,6 +59,7 @@ const executeAction = async (context) => {
 var engine = (function () {
   "use strict";
   const resourceModels = {};
+  const browserModels = {};
   let mentalConfig = {};
   let resolvePayload = undefined;
   let resolveUser = undefined;
@@ -64,7 +76,7 @@ var engine = (function () {
       return resourceModels;
     },
     generateRoutes: () => {
-      return generateRoutes(resourceModels, mentalConfig);
+      return generateRoutes({ resourceModels, browserModels }, mentalConfig);
     },
     resolvePayload: (fn) => {
       resolvePayload = fn;
@@ -79,8 +91,10 @@ var engine = (function () {
 
       let result = await executeAction({
         resourceModels: resourceModels,
+        browserModels: browserModels,
         mentalConfig: mentalConfig,
         mentalAction: {
+          browser: mentalRoute.browser,
           resource: mentalRoute.resource,
           action: mentalRoute.action,
           permissions,
@@ -93,10 +107,30 @@ var engine = (function () {
       mentalConfig = config;
       let resources = fs.readdirSync(config.resourcesPath);
       let mixins = fs.readdirSync(config.mixinsPath);
+      let browsers = fs.readdirSync(config.browsersPath);
       resources = resources.filter(
         (e) => path.extname(e).toLowerCase() === ".json"
       );
       mixins = mixins.filter((e) => path.extname(e).toLowerCase() === ".json");
+      browsers = browsers.filter(
+        (e) => path.extname(e).toLowerCase() === ".json"
+      );
+
+      browsers.forEach((browser) => {
+        const browserPath = path.resolve(`${config.browsersPath}/${browser}`);
+        let browserData = JSON.parse(fs.readFileSync(browserPath, "utf-8"));
+        if (browserData.name) {
+          let attributesArray = [];
+
+          for (const identifier in browserData.attributes) {
+            const attribute = browserData.attributes[identifier];
+            attribute["identifier"] = identifier;
+            attributesArray.push(attribute);
+          }
+          browserData.attributes = attributesArray;
+          browserModels[browserData.name] = browserData;
+        }
+      });
 
       resources.forEach((resource) => {
         const resourcePath = path.resolve(
