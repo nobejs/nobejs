@@ -1,9 +1,7 @@
 const authorize = (context) => {
   const { mentalAction } = context;
 
-  const requiredBasicPermission = `${mentalAction.action}_${
-    mentalAction.resource || mentalAction.browser
-  }`;
+  const requiredBasicPermission = `${mentalAction.action}_${mentalAction.resource}`;
 
   if (
     mentalAction.permissions !== "*" &&

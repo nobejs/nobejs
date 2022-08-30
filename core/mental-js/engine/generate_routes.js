@@ -1,6 +1,5 @@
-const routes = ({ resourceModels, browserModels }, mentalConfig) => {
+const routes = ({ resourceModels }, mentalConfig) => {
   const resources = Object.values(resourceModels);
-  const browsers = Object.values(browserModels);
   const apiEndpoints = [];
   const mentalApiPrefix =
     mentalConfig.apiPrefix === undefined ? "/mental" : mentalConfig.apiPrefix;
@@ -54,44 +53,6 @@ const routes = ({ resourceModels, browserModels }, mentalConfig) => {
           mentalApiPrefix +
           crudPath.path.replace("$api_endpoint", resource.name),
         action: crudPath.action,
-      });
-    }
-  }
-
-  let browserPaths = [
-    {
-      method: "post",
-      path: "/browser/$api_endpoint/_browse",
-      action: "browse",
-    },
-    {
-      method: "post",
-      path: "/browser/$api_endpoint/_config",
-      action: "browser_config",
-    },
-  ];
-
-  for (
-    let browserCounter = 0;
-    browserCounter < browsers.length;
-    browserCounter++
-  ) {
-    const browser = browsers[browserCounter];
-
-    for (
-      let browserPathCounter = 0;
-      browserPathCounter < browserPaths.length;
-      browserPathCounter++
-    ) {
-      const browserPath = browserPaths[browserPathCounter];
-
-      apiEndpoints.push({
-        browser: browser.name,
-        method: browserPath.method,
-        path:
-          mentalApiPrefix +
-          browserPath.path.replace("$api_endpoint", browser.name),
-        action: browserPath.action,
       });
     }
   }

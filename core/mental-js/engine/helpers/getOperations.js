@@ -1,127 +1,85 @@
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
-const runTransformation = require("../helpers/runTransformation");
 
 const getOperations = async (context) => {
-  const { mentalAction, resourceModels, browserModels, mentalConfig } = context;
+  const { mentalAction, resourceModels, mentalConfig } = context;
 
-  if (mentalAction.browser) {
-    const browserSpec = browserModels[mentalAction.browser];
-    const attributes = browserSpec.attributes;
-    const operations = [];
-    let payload = mentalAction.payload;
-    let action = mentalAction.action;
+  const resourceSpec = resourceModels[mentalAction.resource];
+  const attributes = resourceSpec.attributes;
 
-    if (action === "browse") {
-      const resourceSpec = resourceModels[browserSpec.resources[0]];
+  const operations = [];
+  let payload = mentalAction.payload;
+  let action = mentalAction.action;
 
-      let limitBy = mentalAction.payload.limitBy || { page: 1, per_page: 10 };
-      let sortBy = [];
+  if (action === "create") {
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "insert",
+      payload: payload,
+    });
 
-      const resolvedAttributes = attributes;
+    let getWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
 
-      const selectColumns = resolvedAttributes.map(
-        (m) => `${m.source} as ${m.source}`
-      );
-
-      // console.log("mentalAction.filters", mentalAction.filters);
-
-      operations.push({
-        resourceSpec: resourceSpec,
-        operation: "select",
-        filters: mentalAction.filters,
-        selectColumns: selectColumns,
-        limit: limitBy.per_page,
-        page: limitBy.page,
-        offset: (limitBy.page - 1) * limitBy.per_page,
-        sortBy,
-      });
-    }
-
-    mentalAction["operations"] = operations;
-
-    context.mentalAction = mentalAction;
-
-    return context;
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "select_first",
+      where: getWhere,
+    });
   }
 
-  if (mentalAction.resource) {
-    const resourceSpec = resourceModels[mentalAction.resource];
-    const attributes = resourceSpec.attributes;
+  if (action === "delete") {
+    let deleteWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
 
-    const operations = [];
-    let payload = mentalAction.payload;
-    let action = mentalAction.action;
-
-    if (action === "create") {
-      operations.push({
-        resourceSpec: resourceSpec,
-        operation: "insert",
-        payload: payload,
-      });
-
-      let getWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
-
-      operations.push({
-        resourceSpec: resourceSpec,
-        operation: "select_first",
-        where: getWhere,
-      });
-    }
-
-    if (action === "delete") {
-      let deleteWhere = pickKeysFromObject(
-        payload,
-        mentalAction.primaryColumns
-      );
-
-      if (resourceSpec.softDelete === true) {
-        operations.push({
-          resourceSpec: resourceSpec,
-          operation: "update",
-          payload: payload,
-          where: deleteWhere,
-        });
-      } else {
-        operations.push({
-          resourceSpec: resourceSpec,
-          operation: "delete",
-          where: deleteWhere,
-        });
-      }
-    }
-
-    if (action === "update") {
-      let updateWhere = pickKeysFromObject(
-        payload,
-        mentalAction.primaryColumns
-      );
-
+    if (resourceSpec.softDelete === true) {
       operations.push({
         resourceSpec: resourceSpec,
         operation: "update",
         payload: payload,
-        where: updateWhere,
+        where: deleteWhere,
       });
-
+    } else {
       operations.push({
         resourceSpec: resourceSpec,
-        operation: "select_first",
-        where: updateWhere,
+        operation: "delete",
+        where: deleteWhere,
       });
     }
+  }
 
-    if (action === "read") {
-      let limitBy = mentalAction.payload.limitBy || { page: 1, per_page: 10 };
-      let filterBy = mentalAction.payload.filterBy || [];
-      let sortBy = mentalAction.payload.sortBy || [];
-      const table = resourceSpec.meta.table;
+  if (action === "update") {
+    let updateWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
 
-      const selectColumns = [
-        ...mentalAction.directColumns,
-        ...mentalAction.belongsToOneColumns,
-      ].map((m) => `${table}.${m}`);
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "update",
+      payload: payload,
+      where: updateWhere,
+    });
 
-      filters = filterBy.map((f) => {
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "select_first",
+      where: updateWhere,
+    });
+  }
+
+  if (action === "read") {
+    let limitBy = mentalAction.payload.limitBy || { page: 1, per_page: 10 };
+    let filterBy = mentalAction.payload.filterBy || [];
+    let sortBy = mentalAction.payload.sortBy || [];
+    const table = resourceSpec.meta.table;
+
+    const selectColumns = [
+      ...mentalAction.directColumns,
+      ...mentalAction.belongsToOneColumns,
+    ].map((m) => `${table}.${m}`);
+
+    // console.log("selectColumns", selectColumns);
+
+    filters = filterBy
+      .filter((f) => {
+        return f.op;
+      })
+      .map((f) => {
         return {
           column: f.attribute.toLowerCase(),
           op: f.op,
@@ -129,27 +87,28 @@ const getOperations = async (context) => {
         };
       });
 
-      sortBy = sortBy.map((s) => {
-        return { column: s.attribute, order: s.order, nulls: "last" };
-      });
+    filters = [...filters, ...mentalAction.filters];
 
-      operations.push({
-        resourceSpec: resourceSpec,
-        operation: "select",
-        filters: filters,
-        selectColumns: selectColumns,
-        limit: limitBy.per_page,
-        offset: (limitBy.page - 1) * limitBy.per_page,
-        sortBy,
-      });
-    }
+    sortBy = sortBy.map((s) => {
+      return { column: s.attribute, order: s.order, nulls: "last" };
+    });
 
-    mentalAction["operations"] = operations;
-
-    context.mentalAction = mentalAction;
-
-    return context;
+    operations.push({
+      resourceSpec: resourceSpec,
+      operation: "select",
+      filters: filters,
+      selectColumns: selectColumns,
+      limit: limitBy.per_page,
+      offset: (limitBy.page - 1) * limitBy.per_page,
+      sortBy,
+    });
   }
+
+  mentalAction["operations"] = operations;
+
+  context.mentalAction = mentalAction;
+
+  return context;
 };
 
 module.exports = getOperations;

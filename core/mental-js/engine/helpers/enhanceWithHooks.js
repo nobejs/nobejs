@@ -19,7 +19,7 @@ const enhanceWithHooks = async (context, actionSequence) => {
       const hookName = `${lifeCycle}${capitalizeFirstLetter(
         method
       )}${capitalizeFirstLetter(mentalAction.action)}${capitalizeFirstLetter(
-        mentalAction.resource || mentalAction.browser
+        mentalAction.resource
       )}`;
 
       if (requiredHooks[hookName]) {
