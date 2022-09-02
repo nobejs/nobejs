@@ -5,7 +5,10 @@ const runTransformations = async (context) => {
 
   const resourceSpec = resourceModels[mentalAction.resource];
   const attributes = resourceSpec.attributes;
-  let currentData = context.mentalAction["opResult"]["data"];
+  let currentData =
+    context.mentalAction["opResult"]["data"] === undefined
+      ? [context.mentalAction["opResult"]]
+      : context.mentalAction["opResult"]["data"];
   let newOpResult = [];
 
   // console.log("currentData", currentData);
@@ -27,7 +30,7 @@ const runTransformations = async (context) => {
         attribute.mutateFrom !== undefined &&
         transformations.length > 0
       ) {
-        console.log("attribute", attribute);
+        // console.log("attribute", attribute);
         let transformedValue = currentDataItem;
         for (let index = 0; index < transformations.length; index++) {
           const transformation = transformations[index];
@@ -37,7 +40,7 @@ const runTransformations = async (context) => {
             transformation
           );
         }
-        console.log("transformedValue", transformedValue);
+        // console.log("transformedValue", transformedValue);
         transformed[attribute.identifier] = transformedValue;
       } else {
         // const valueFromSource = currentDataItem[attribute.source];
@@ -47,7 +50,11 @@ const runTransformations = async (context) => {
     newOpResult.push(transformed);
   }
 
-  context.mentalAction["opResult"]["data"] = newOpResult;
+  if (context.mentalAction["opResult"]["data"] === undefined) {
+    context.mentalAction["opResult"] = newOpResult[0];
+  } else {
+    context.mentalAction["opResult"]["data"] = newOpResult;
+  }
 
   return context;
 

@@ -9,13 +9,13 @@ const runTransformationsForFilters = async (context) => {
   let newFilterBy = {};
   let filters = [];
 
-  filterBy
-    .filter((f) => {
-      return !f.op;
-    })
-    .forEach((element) => {
-      newFilterBy[element.attribute] = element.value;
-    });
+  filterBy = filterBy.filter((f) => {
+    return !f.op;
+  });
+
+  filterBy.forEach((element) => {
+    newFilterBy[element.attribute] = element.value;
+  });
 
   for (let index = 0; index < filterBy.length; index++) {
     const element = filterBy[index];

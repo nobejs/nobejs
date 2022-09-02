@@ -11,27 +11,43 @@ const addToConstraints = (
   const { mentalAction } = context;
   let payload = mentalAction.payload;
   let action = mentalAction.action;
+  let attribute_identifier = attribute.relation
+    ? attribute.relation.resolveTo
+    : attribute.identifier;
 
-  constraints[attribute.identifier] = {};
+  constraints[attribute_identifier] = {};
 
   for (let vCounter = 0; vCounter < validators.length; vCounter++) {
     const validator = validators[vCounter];
     if (validator.type === "required") {
-      constraints[attribute.identifier]["presence"] = {
+      constraints[attribute_identifier]["presence"] = {
         allowEmpty: false,
         message: `^Please enter ${attribute.label}`,
       };
     }
 
+    if (validator.type === "uuid") {
+      constraints[attribute_identifier]["presence"] = {
+        allowEmpty: false,
+        message: `^Please enter ${attribute.label}`,
+      };
+
+      constraints[attribute_identifier]["format"] = {
+        pattern:
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        message: `^Please enter valid ${attribute.label} matching an uuid`,
+      };
+    }
+
     if (validator.type === "regex") {
-      constraints[attribute.identifier]["format"] = {
+      constraints[attribute_identifier]["format"] = {
         pattern: validator.value,
         message: `^Please enter valid ${attribute.label} matching ${validator.value}`,
       };
     }
 
     if (validator.type === "within") {
-      constraints[attribute.identifier]["inclusion"] = {
+      constraints[attribute_identifier]["inclusion"] = {
         within: validator.value,
         message: `^Please choose valid type within ${JSON.stringify(
           validator.value
@@ -55,7 +71,7 @@ const addToConstraints = (
       const includeAttributes = validator.includeAttributes;
       const excludeAttributes = validator.excludeAttributes;
 
-      where[attribute.identifier] = payload[attribute.identifier];
+      where[attribute_identifier] = payload[attribute_identifier];
 
       for (let index = 0; index < includeAttributes.length; index++) {
         const includeAttribute = includeAttributes[index];
@@ -71,8 +87,8 @@ const addToConstraints = (
         }
       }
 
-      constraints[attribute.identifier]["unique"] = {
-        message: `${attribute.identifier} should be unique.`,
+      constraints[attribute_identifier]["unique"] = {
+        message: `${attribute_identifier} should be unique.`,
         table: validator.table,
         where: where,
         whereNot: whereNot,
@@ -84,8 +100,8 @@ const addToConstraints = (
       let whereNot = {};
       const includeAttributes = validator.includeAttributes || [];
       const excludeAttributes = validator.excludeAttributes || [];
-      where[validator.column || attribute.identifier] =
-        payload[attribute.identifier];
+      where[validator.column || attribute_identifier] =
+        payload[attribute_identifier];
 
       for (let index = 0; index < includeAttributes.length; index++) {
         const includeAttribute = includeAttributes[index];
@@ -101,8 +117,8 @@ const addToConstraints = (
         }
       }
 
-      constraints[attribute.identifier]["exists"] = {
-        message: `${attribute.identifier} should exist.`,
+      constraints[attribute_identifier]["exists"] = {
+        message: `${attribute_identifier} should exist.`,
         table: validator.table,
         where: where,
         whereNot: whereNot,
@@ -112,7 +128,7 @@ const addToConstraints = (
     if (validator.type === "custom_validator") {
       validator["custom_validator"] =
         outsideValidatorFunctions[validator.value];
-      constraints[attribute.identifier]["outside_function"] = validator;
+      constraints[attribute_identifier]["outside_function"] = validator;
     }
   }
 
@@ -167,6 +183,7 @@ const validate = async (context) => {
   }
 
   try {
+    // console.log("constraints", payload, constraints);
     let validatorResult = await validator(payload, constraints);
   } catch (error) {
     throw error;

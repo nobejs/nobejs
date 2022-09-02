@@ -77,6 +77,8 @@ var engine = (function () {
       const permissions = await resolveUser(mentalRoute, frameworkData);
       const payload = await resolvePayload(mentalRoute, frameworkData);
 
+      // console.log("payload", payload);
+
       let result = await executeAction({
         resourceModels: resourceModels,
         mentalConfig: mentalConfig,
@@ -121,6 +123,9 @@ var engine = (function () {
             for (const identifier in resourceData.attributes) {
               const attribute = resourceData.attributes[identifier];
               attribute["identifier"] = identifier;
+              attribute["resolved_identifier"] = attribute.relation
+                ? attribute.relation.resolveTo
+                : attribute.identifier;
               attribute["source"] = `${resourceData.meta.table}.${identifier}`;
               attributesArray.push(attribute);
             }

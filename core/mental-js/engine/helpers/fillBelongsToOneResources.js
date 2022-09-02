@@ -1,7 +1,10 @@
 const fillBelongsToOneResources = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const { belongsToOneColumns, belongsToOneMappings } = mentalAction;
-  let currentData = context.mentalAction["opResult"]["data"];
+  let currentData =
+    context.mentalAction["opResult"]["data"] === undefined
+      ? [context.mentalAction["opResult"]]
+      : context.mentalAction["opResult"]["data"];
 
   for (let index = 0; index < belongsToOneColumns.length; index++) {
     const operations = [];

@@ -11,6 +11,8 @@ const getOperations = async (context) => {
   let action = mentalAction.action;
 
   if (action === "create") {
+    // console.log("payload", payload);
+
     operations.push({
       resourceSpec: resourceSpec,
       operation: "insert",
