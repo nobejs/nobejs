@@ -3,7 +3,7 @@ const validate = require("../helpers/validate");
 const cleanPayload = require("../helpers/cleanPayload");
 const getOperations = require("../helpers/getOperations");
 const runOperations = require("../helpers/runOperations");
-const saveTSVector = require("../helpers/saveTSVector");
+const saveFacet = require("../helpers/saveFacet");
 const authorize = require("../helpers/authorize");
 const executeSequence = require("../helpers/executeSequence");
 const enhanceWithHooks = require("../helpers/enhanceWithHooks");
@@ -21,7 +21,7 @@ module.exports = async (context) => {
       fillBelongsToOneResources,
       runTransformations,
     ],
-    respond: [saveTSVector],
+    respond: [saveFacet],
   });
 
   context = await executeSequence(context, sequence);

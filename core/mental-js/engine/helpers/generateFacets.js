@@ -10,15 +10,15 @@ const generateFacets = async (context) => {
     const attributes = resourceSpec.attributes;
     let generatedFacets = context.mentalAction["opResult"]["generated_facets"];
 
-    let tsVectorAttributes = resourceSpec.attributes.filter((c) => {
-      return c.tsVector;
+    let facetAttributes = resourceSpec.attributes.filter((c) => {
+      return c.facet;
     });
 
-    for (let tIndex = 0; tIndex < tsVectorAttributes.length; tIndex++) {
-      const tsVectorAttribute = tsVectorAttributes[tIndex];
-      const tag = tsVectorAttribute["tsVector"]["tag"];
-      const valueKey = tsVectorAttribute["tsVector"]["value"];
-      const resource = tsVectorAttribute["tsVector"]["resource"];
+    for (let tIndex = 0; tIndex < facetAttributes.length; tIndex++) {
+      const facetAttribute = facetAttributes[tIndex];
+      const tag = facetAttribute["facet"]["tag"];
+      const valueKey = facetAttribute["facet"]["value"];
+      const resource = facetAttribute["facet"]["resource"];
 
       const valueAndCountMap = {};
 
@@ -32,8 +32,8 @@ const generateFacets = async (context) => {
         });
 
       //   console.log(
-      //     "tsVectorAttribute",
-      //     tsVectorAttribute.identifier,
+      //     "facetAttribute",
+      //     facetAttribute.identifier,
       //     filteredByTag,
       //   );
 

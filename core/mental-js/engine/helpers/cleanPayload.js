@@ -42,7 +42,47 @@ const cleanPayload = async (context) => {
       {}
     );
 
-  // console.log("before cleaning", belongsToOneMappings);
+  let hasOneColumns = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "has_one";
+    })
+    .map((c) => {
+      return `${c.relation.resolveTo || c.identifier}`;
+    });
+
+  let hasOneMappings = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "has_one";
+    })
+    .reduce(
+      (obj, c) =>
+        Object.assign(obj, {
+          [`${c.relation.resolveTo || c.identifier}`]: c,
+        }),
+      {}
+    );
+
+  let hasManyColumns = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "has_many";
+    })
+    .map((c) => {
+      return `${c.relation.resolveTo || c.identifier}`;
+    });
+
+  let hasManyMappings = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "has_many";
+    })
+    .reduce(
+      (obj, c) =>
+        Object.assign(obj, {
+          [`${c.relation.resolveTo || c.identifier}`]: c,
+        }),
+      {}
+    );
+
+  // console.log("before cleaning", attributes, hasOneColumns);
 
   let otherKeys = [];
 
@@ -60,6 +100,11 @@ const cleanPayload = async (context) => {
   mentalAction["directColumns"] = directColumns;
   mentalAction["belongsToOneColumns"] = belongsToOneColumns;
   mentalAction["belongsToOneMappings"] = belongsToOneMappings;
+  mentalAction["hasOneColumns"] = hasOneColumns;
+  mentalAction["hasOneMappings"] = hasOneMappings;
+  mentalAction["hasManyColumns"] = hasManyColumns;
+  mentalAction["hasManyMappings"] = hasManyMappings;
+
   mentalAction["primaryColumns"] = resourceSpec.primary;
   context.mentalAction = mentalAction;
 

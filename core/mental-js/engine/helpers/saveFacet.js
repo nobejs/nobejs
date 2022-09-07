@@ -2,7 +2,7 @@ const { resolveByDot } = require("./utils");
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 const knex = requireKnex();
 
-const saveTSVector = async (context) => {
+const saveFacet = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const resourceSpec = resourceModels[mentalAction.resource];
 
@@ -13,34 +13,34 @@ const saveTSVector = async (context) => {
       : context.mentalAction["opResult"]["data"];
 
   if (
-    resourceSpec["tsVector"] !== undefined &&
-    resourceSpec["tsVector"]["tagsColumns"] !== undefined &&
-    resourceSpec["tsVector"]["tsvColumn"] !== undefined
+    resourceSpec["facet"] !== undefined &&
+    resourceSpec["facet"]["tagsColumns"] !== undefined &&
+    resourceSpec["facet"]["tsvColumn"] !== undefined
   ) {
-    let tsVectorAttributes = resourceSpec.attributes.filter((c) => {
-      return c.tsVector;
+    let facetAttributes = resourceSpec.attributes.filter((c) => {
+      return c.facet;
     });
 
-    // console.log("saveTsVector", resourceSpec["tsVector"]);
-    // console.log("tsVectorAttributes", tsVectorAttributes);
+    // console.log("saveFacet", resourceSpec["facet"]);
+    // console.log("facetAttributes", facetAttributes);
 
     for (let cIndex = 0; cIndex < currentData.length; cIndex++) {
       const currentDataItem = currentData[cIndex];
       let tagsArray = [];
 
-      for (let tIndex = 0; tIndex < tsVectorAttributes.length; tIndex++) {
-        const tsVectorAttribute = tsVectorAttributes[tIndex];
+      for (let tIndex = 0; tIndex < facetAttributes.length; tIndex++) {
+        const facetAttribute = facetAttributes[tIndex];
 
         // console.log(
-        //   "tsVectorAttribute",
-        //   tsVectorAttribute.tsVector,
-        //   currentDataItem[tsVectorAttribute.identifier]
+        //   "facetAttribute",
+        //   facetAttribute.facet,
+        //   currentDataItem[facetAttribute.identifier]
         // );
 
         tagsArray.push(
-          `${tsVectorAttribute.tsVector.tag}:${
-            currentDataItem[tsVectorAttribute.identifier][
-              tsVectorAttribute.tsVector.value
+          `${facetAttribute.facet.tag}:${
+            currentDataItem[facetAttribute.identifier][
+              facetAttribute.facet.value
             ]
           }`
         );
@@ -56,9 +56,9 @@ const saveTSVector = async (context) => {
       );
 
       let tsvPayload = {};
-      tsvPayload[resourceSpec["tsVector"]["tagsColumns"]] =
+      tsvPayload[resourceSpec["facet"]["tagsColumns"]] =
         JSON.stringify(tagsArray);
-      tsvPayload[resourceSpec["tsVector"]["tsvColumn"]] = knex.raw(
+      tsvPayload[resourceSpec["facet"]["tsvColumn"]] = knex.raw(
         `array_to_tsvector(\'{${tagsString.join(",")}}\')`
       );
 
@@ -80,4 +80,4 @@ const saveTSVector = async (context) => {
   return context;
 };
 
-module.exports = saveTSVector;
+module.exports = saveFacet;

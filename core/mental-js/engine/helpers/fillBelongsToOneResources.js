@@ -20,7 +20,7 @@ const fillBelongsToOneResources = async (context) => {
 
     let whereClause = {};
     whereClause["op"] = "in";
-    whereClause["column"] = columnSpec.relation.source;
+    whereClause["column"] = columnSpec.relation.foreignKey;
     whereClause["value"] = allColumnValues;
 
     operations.push({
@@ -34,25 +34,22 @@ const fillBelongsToOneResources = async (context) => {
     relationData = relationData["data"];
 
     for (
-      let indexRelation = 0;
-      indexRelation < relationData.length;
-      indexRelation++
+      let indexCurrent = 0;
+      indexCurrent < currentData.length;
+      indexCurrent++
     ) {
-      const relationDataElement = relationData[indexRelation];
+      const currentDataElement = currentData[indexCurrent];
 
-      for (
-        let indexCurrent = 0;
-        indexCurrent < currentData.length;
-        indexCurrent++
-      ) {
-        const currentDataElement = currentData[indexCurrent];
-        if (
+      const hasOneData = relationData.filter((relationDataElement) => {
+        return (
           currentDataElement[column] ===
-          relationDataElement[columnSpec.relation.source]
-        ) {
-          currentDataElement[columnSpec.identifier] = relationDataElement;
-          currentData[indexCurrent] = currentDataElement;
-        }
+          relationDataElement[columnSpec.relation.foreignKey]
+        );
+      });
+
+      if (hasOneData.length > 0) {
+        currentDataElement[columnSpec.identifier] = hasOneData[0];
+        currentData[indexCurrent] = currentDataElement;
       }
     }
 
