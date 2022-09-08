@@ -9,7 +9,7 @@ const fillHasManyWithPivotResources = async (context) => {
       ? [context.mentalAction["opResult"]]
       : context.mentalAction["opResult"]["data"];
 
-  console.log("hasManyViaPivotColumns", hasManyViaPivotColumns);
+  // console.log("hasManyViaPivotColumns", hasManyViaPivotColumns);
 
   for (let index = 0; index < hasManyViaPivotColumns.length; index++) {
     const operations = [];
@@ -53,7 +53,7 @@ const fillHasManyWithPivotResources = async (context) => {
 
     filterWhereClauses.push(whereClause);
 
-    console.log("filterWhereClauses has many", filterWhereClauses);
+    // console.log("filterWhereClauses has many", filterWhereClauses);
 
     operations.push({
       resourceSpec: {
@@ -69,7 +69,7 @@ const fillHasManyWithPivotResources = async (context) => {
     let relationData = await mentalConfig.operator(operations);
     relationData = relationData["data"];
 
-    console.log("relationData", relationData);
+    // console.log("relationData", relationData);
 
     for (
       let indexCurrent = 0;
@@ -94,7 +94,7 @@ const fillHasManyWithPivotResources = async (context) => {
       resourceWhereClause["column"] = columnSpec.relation.resourceLocalKey;
       resourceWhereClause["value"] = resourceKeys;
 
-      console.log("resourceKeys", resourceKeys);
+      // console.log("resourceKeys", resourceKeys);
 
       let operations = [];
 
