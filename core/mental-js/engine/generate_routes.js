@@ -17,6 +17,11 @@ const routes = ({ resourceModels }, mentalConfig) => {
     },
     {
       method: "post",
+      path: "/resource/$api_endpoint/_patch",
+      action: "patch",
+    },
+    {
+      method: "post",
       path: "/resource/$api_endpoint/_delete",
       action: "delete",
     },

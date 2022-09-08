@@ -3,6 +3,7 @@ const runOperations = require("../helpers/runOperations");
 const fillBelongsToOneResources = require("../helpers/fillBelongsToOneResources");
 const fillHasOneResources = require("../helpers/fillHasOneResources");
 const fillHasManyResources = require("../helpers/fillHasManyResources");
+const fillHasManyWithPivotResources = require("../helpers/fillHasManyWithPivotResources");
 const runTransformationsForFilters = require("../helpers/runTransformationsForFilters");
 const authorize = require("../helpers/authorize");
 const executeSequence = require("../helpers/executeSequence");
@@ -24,6 +25,7 @@ module.exports = async (context) => {
       fillBelongsToOneResources,
       fillHasOneResources,
       fillHasManyResources,
+      fillHasManyWithPivotResources,
       runTransformations,
     ],
     respond: [generateFacets],

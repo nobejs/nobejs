@@ -28,6 +28,10 @@ const executeAction = async (context) => {
     return await updateAction(context);
   }
 
+  if (mentalAction.action === "patch") {
+    return await updateAction(context);
+  }
+
   if (mentalAction.action === "read") {
     return await readAction(context);
   }

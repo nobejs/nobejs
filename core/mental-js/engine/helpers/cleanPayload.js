@@ -82,6 +82,26 @@ const cleanPayload = async (context) => {
       {}
     );
 
+  let hasManyViaPivotColumns = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "has_many_via_pivot";
+    })
+    .map((c) => {
+      return `${c.relation.resolveTo || c.identifier}`;
+    });
+
+  let hasManyViaPivotMappings = attributes
+    .filter((c) => {
+      return c.relation && c.relation.type === "has_many_via_pivot";
+    })
+    .reduce(
+      (obj, c) =>
+        Object.assign(obj, {
+          [`${c.relation.resolveTo || c.identifier}`]: c,
+        }),
+      {}
+    );
+
   // console.log("before cleaning", attributes, hasOneColumns);
 
   let otherKeys = [];
@@ -90,6 +110,10 @@ const cleanPayload = async (context) => {
     otherKeys = ["limitBy", "sortBy", "filterBy"];
   }
 
+  const hasManyPayload = pickKeysFromObject(payload, [
+    ...hasManyViaPivotColumns,
+  ]);
+
   payload = pickKeysFromObject(payload, [
     ...directColumns,
     ...belongsToOneColumns,
@@ -97,6 +121,7 @@ const cleanPayload = async (context) => {
   ]);
 
   mentalAction["payload"] = payload;
+  mentalAction["hasManyPayload"] = hasManyPayload;
   mentalAction["directColumns"] = directColumns;
   mentalAction["belongsToOneColumns"] = belongsToOneColumns;
   mentalAction["belongsToOneMappings"] = belongsToOneMappings;
@@ -104,6 +129,8 @@ const cleanPayload = async (context) => {
   mentalAction["hasOneMappings"] = hasOneMappings;
   mentalAction["hasManyColumns"] = hasManyColumns;
   mentalAction["hasManyMappings"] = hasManyMappings;
+  mentalAction["hasManyViaPivotColumns"] = hasManyViaPivotColumns;
+  mentalAction["hasManyViaPivotMappings"] = hasManyViaPivotMappings;
 
   mentalAction["primaryColumns"] = resourceSpec.primary;
   context.mentalAction = mentalAction;

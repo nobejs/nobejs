@@ -150,13 +150,21 @@ const validate = async (context) => {
   let forIndex = 0;
   let constraints = {};
 
-  // console.log("payload", action, payload);
+  const payloadObjectKeys = Object.keys(payload);
+  // console.log("payload", action, payloadObjectKeys);
 
   for (forIndex = 0; forIndex < attributesWithOperations.length; forIndex++) {
     const attribute = attributesWithOperations[forIndex];
     const operationKeys = Object.keys(attribute.operations);
 
     let validators = [];
+
+    if (
+      action === "patch" &&
+      !payloadObjectKeys.includes(attribute.resolved_identifier)
+    ) {
+      continue;
+    }
 
     for (let index = 0; index < operationKeys.length; index++) {
       const operationKey = operationKeys[index];

@@ -8,6 +8,7 @@ const getOperations = async (context) => {
 
   const operations = [];
   let payload = mentalAction.payload;
+  let hasManyPayload = mentalAction.hasManyPayload;
   let action = mentalAction.action;
 
   if (action === "create") {
@@ -47,7 +48,7 @@ const getOperations = async (context) => {
     }
   }
 
-  if (action === "update") {
+  if (action === "update" || action === "patch") {
     let updateWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
 
     operations.push({
@@ -56,6 +57,56 @@ const getOperations = async (context) => {
       payload: payload,
       where: updateWhere,
     });
+
+    // We have to run an insert query insert for has many via pivot relationships
+
+    // console.log(
+    //   "mentalAction.hasManyViaPivotColumns",
+    //   mentalAction.hasManyViaPivotColumns
+    // );
+
+    const hasManyViaPivotColumns = mentalAction.hasManyViaPivotColumns;
+
+    for (let index = 0; index < hasManyViaPivotColumns.length; index++) {
+      const hasManyViaPivotColumn = hasManyViaPivotColumns[index];
+      if (hasManyPayload[hasManyViaPivotColumn] !== undefined) {
+        const attributeSpec = attributes.find((element) => {
+          return element.identifier === hasManyViaPivotColumn;
+        });
+        const resourcePayload = hasManyPayload[hasManyViaPivotColumn];
+        let deleteWhere = attributeSpec.relation.filter || {};
+        deleteWhere[attributeSpec.relation.foreignKey] =
+          payload[attributeSpec.relation.localKey];
+
+        const insertObjects = resourcePayload.map((value) => {
+          const insertObject = { ...deleteWhere };
+          insertObject[attributeSpec.relation.resourceForeignKey] = value;
+          return insertObject;
+        });
+
+        operations.push({
+          resourceSpec: {
+            meta: {
+              table: attributeSpec.relation.pivotTable,
+            },
+          },
+          operation: "delete",
+          where: deleteWhere,
+        });
+
+        if (insertObjects.length > 0) {
+          operations.push({
+            resourceSpec: {
+              meta: {
+                table: attributeSpec.relation.pivotTable,
+              },
+            },
+            operation: "insert",
+            payload: insertObjects,
+          });
+        }
+      }
+    }
 
     operations.push({
       resourceSpec: resourceSpec,
