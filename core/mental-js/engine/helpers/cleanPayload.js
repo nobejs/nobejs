@@ -10,6 +10,12 @@ const cleanPayload = async (context) => {
 
   let payload = mentalAction.payload;
   let action = mentalAction.action;
+  let relationColumns = {
+    belongs_to_one: [],
+    has_one: [],
+    has_many: [],
+    has_many_via_pivot: [],
+  };
   let forIndex = 0;
 
   let directColumns = attributes
@@ -35,6 +41,7 @@ const cleanPayload = async (context) => {
       return c.relation && c.relation.type === "belongs_to_one";
     })
     .map((c) => {
+      relationColumns["belongs_to_one"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
 
@@ -55,6 +62,7 @@ const cleanPayload = async (context) => {
       return c.relation && c.relation.type === "has_one";
     })
     .map((c) => {
+      relationColumns["has_one"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
 
@@ -75,6 +83,7 @@ const cleanPayload = async (context) => {
       return c.relation && c.relation.type === "has_many";
     })
     .map((c) => {
+      relationColumns["has_many"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
 
@@ -95,6 +104,7 @@ const cleanPayload = async (context) => {
       return c.relation && c.relation.type === "has_many_via_pivot";
     })
     .map((c) => {
+      relationColumns["has_many_via_pivot"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
 
@@ -148,6 +158,7 @@ const cleanPayload = async (context) => {
   mentalAction["hasManyViaPivotColumns"] = hasManyViaPivotColumns;
   mentalAction["hasManyViaPivotMappings"] = hasManyViaPivotMappings;
   mentalAction["mutationColumns"] = mutationColumns;
+  mentalAction["relationColumns"] = relationColumns;
 
   mentalAction["primaryColumns"] = resourceSpec.primary;
   context.mentalAction = mentalAction;

@@ -18,15 +18,8 @@ module.exports = async (context) => {
   let columnsData = {};
 
   let resourceSpec = resourceModels[mentalAction.resource];
-  columnsData["directColumns"] = mentalAction["directColumns"];
-  columnsData["belongsToOneColumns"] = mentalAction["belongsToOneColumns"];
-  columnsData["belongsToOneColumns"] = mentalAction["belongsToOneColumns"];
-  columnsData["hasOneColumns"] = mentalAction["hasOneColumns"];
-  columnsData["hasManyColumns"] = mentalAction["hasManyColumns"];
-  columnsData["hasManyViaPivotColumns"] =
-    mentalAction["hasManyViaPivotColumns"];
-  columnsData["primaryColumns"] = mentalAction["primaryColumns"];
-  columnsData["mutationColumns"] = mentalAction["mutationColumns"];
+  columnsData["relations"] = mentalAction["relationColumns"];
+  columnsData["mutations"] = mentalAction["mutationColumns"];
 
   return { respondResult: { ...columnsData, ...resourceSpec } };
 };
