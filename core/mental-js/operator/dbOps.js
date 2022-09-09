@@ -122,6 +122,7 @@ const dbOps = async (dbOps) => {
             };
 
             if (
+              dbOp.includeFacets === true &&
               resourceSpec["facet"] !== undefined &&
               resourceSpec["facet"]["tagsColumns"] !== undefined &&
               resourceSpec["facet"]["tsvColumn"] !== undefined

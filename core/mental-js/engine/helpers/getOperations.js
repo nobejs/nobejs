@@ -154,6 +154,7 @@ const getOperations = async (context) => {
       limit: limitBy.per_page,
       offset: (limitBy.page - 1) * limitBy.per_page,
       sortBy,
+      includeFacets: mentalAction.apiConfig.includeFacets || false,
     });
   }
 
