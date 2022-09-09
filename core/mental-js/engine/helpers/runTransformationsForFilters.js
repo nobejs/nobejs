@@ -13,6 +13,8 @@ const runTransformationsForFilters = async (context) => {
     return !f.op;
   });
 
+  // console.log("filterBy", filterBy);
+
   filterBy.forEach((element) => {
     newFilterBy[element.attribute] = element.value;
   });
@@ -36,15 +38,17 @@ const runTransformationsForFilters = async (context) => {
           );
         }
 
+        console.log("resourceSpecFilter", resourceSpecFilter);
+
         let whereClause = {};
         whereClause["op"] = "in";
-        whereClause["column"] = resourceSpecFilter.resolveTo;
+        whereClause["column"] = resourceSpecFilter.localKey;
         whereClause["value"] = transformedValue[element.attribute];
         filters.push(whereClause);
       } else {
         let whereClause = {};
         whereClause["op"] = "in";
-        whereClause["column"] = resourceSpecFilter.resolveTo;
+        whereClause["column"] = resourceSpecFilter.localKey;
         whereClause["value"] = element.value;
         filters.push(whereClause);
       }
