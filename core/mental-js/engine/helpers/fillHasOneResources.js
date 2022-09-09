@@ -1,11 +1,15 @@
 const executeActionInternally = require("../executeActionInternally");
-const prepareIncludes = require("./prepareIncludes");
+const prepareRelationIncludes = require("./prepareRelationIncludes");
 
 const fillHasOneResources = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const { hasOneColumns, hasOneMappings } = mentalAction;
 
-  let includes = prepareIncludes(mentalAction, hasOneColumns, hasOneMappings);
+  let includeRelations = prepareRelationIncludes(
+    mentalAction,
+    hasOneColumns,
+    hasOneMappings
+  );
 
   // Get the current data
 
@@ -18,7 +22,7 @@ const fillHasOneResources = async (context) => {
     const column = hasOneColumns[index];
     const columnSpec = hasOneMappings[column];
 
-    if (!includes.includes(columnSpec.identifier)) {
+    if (!includeRelations.includes(columnSpec.identifier)) {
       continue;
     }
 

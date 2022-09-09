@@ -1,9 +1,9 @@
-const prepareIncludes = require("./prepareIncludes");
+const prepareRelationIncludes = require("./prepareRelationIncludes");
 
 const fillHasManyWithPivotResources = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const { hasManyViaPivotColumns, hasManyViaPivotMappings } = mentalAction;
-  let includes = prepareIncludes(
+  let includeRelations = prepareRelationIncludes(
     mentalAction,
     hasManyViaPivotColumns,
     hasManyViaPivotMappings
@@ -24,7 +24,7 @@ const fillHasManyWithPivotResources = async (context) => {
     const column = hasManyViaPivotColumns[index];
     const columnSpec = hasManyViaPivotMappings[column];
 
-    if (!includes.includes(columnSpec.identifier)) {
+    if (!includeRelations.includes(columnSpec.identifier)) {
       continue;
     }
 

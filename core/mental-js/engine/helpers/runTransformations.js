@@ -1,4 +1,5 @@
 const runTransformation = require("../helpers/runTransformation");
+const prepareMutationIncludes = require("./prepareMutationIncludes");
 
 const runTransformations = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
@@ -11,7 +12,7 @@ const runTransformations = async (context) => {
       : context.mentalAction["opResult"]["data"];
   let newOpResult = [];
 
-  // console.log("currentData", currentData);
+  let includeMutations = prepareMutationIncludes(mentalAction, attributes);
 
   let forIndex = 0;
 
@@ -22,6 +23,10 @@ const runTransformations = async (context) => {
     for (forIndex = 0; forIndex < attributes.length; forIndex++) {
       const attribute = attributes[forIndex];
       const transformations = attribute.transformations;
+
+      if (!includeMutations.includes(attribute.identifier)) {
+        continue;
+      }
 
       // console.log("transformations", transformations);
 

@@ -2,6 +2,7 @@ const createAction = require("./create");
 const updateAction = require("./update");
 const readAction = require("./read");
 const deleteAction = require("./delete");
+const configAction = require("./config");
 
 const executeAction = async (context) => {
   const { mentalAction } = context;
@@ -36,6 +37,7 @@ const executeAction = async (context) => {
   }
 
   if (mentalAction.action === "crud_config") {
+    return await configAction(context);
     const { resourceModels } = context;
     const resourceSpec = resourceModels[mentalAction.resource];
     return { respondResult: resourceSpec };

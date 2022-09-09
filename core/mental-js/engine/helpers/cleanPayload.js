@@ -20,7 +20,15 @@ const cleanPayload = async (context) => {
       return `${c.identifier}`;
     });
 
-  // console.log("directColumns", directColumns);
+  let mutationColumns = attributes
+    .filter((c) => {
+      return c.mutateFrom;
+    })
+    .map((c) => {
+      return `${c.identifier}`;
+    });
+
+  // console.log("directColumns", mutationColumns);
 
   let belongsToOneColumns = attributes
     .filter((c) => {
@@ -139,6 +147,7 @@ const cleanPayload = async (context) => {
   mentalAction["hasManyMappings"] = hasManyMappings;
   mentalAction["hasManyViaPivotColumns"] = hasManyViaPivotColumns;
   mentalAction["hasManyViaPivotMappings"] = hasManyViaPivotMappings;
+  mentalAction["mutationColumns"] = mutationColumns;
 
   mentalAction["primaryColumns"] = resourceSpec.primary;
   context.mentalAction = mentalAction;
