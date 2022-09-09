@@ -1,3 +1,6 @@
+const executeActionInternally = require("../executeActionInternally");
+const prepareIncludes = require("./prepareIncludes");
+
 const fillBelongsToOneResources = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const { belongsToOneColumns, belongsToOneMappings } = mentalAction;
@@ -6,32 +9,53 @@ const fillBelongsToOneResources = async (context) => {
       ? [context.mentalAction["opResult"]]
       : context.mentalAction["opResult"]["data"];
 
-  for (let index = 0; index < belongsToOneColumns.length; index++) {
-    const operations = [];
+  let includes = prepareIncludes(
+    mentalAction,
+    belongsToOneColumns,
+    belongsToOneMappings
+  );
 
+  for (let index = 0; index < belongsToOneColumns.length; index++) {
     const column = belongsToOneColumns[index];
     const columnSpec = belongsToOneMappings[column];
+
+    if (!includes.includes(columnSpec.identifier)) {
+      continue;
+    }
+
+    // console.log("columnSpec", columnSpec.identifier);
+
     let allColumnValues = currentData.map((d) => {
       return d[column];
     });
+
     allColumnValues = [...new Set(allColumnValues)];
 
     const resourceSpec = resourceModels[columnSpec.relation.resource];
 
-    let whereClause = {};
-    whereClause["op"] = "in";
-    whereClause["column"] = columnSpec.relation.foreignKey;
-    whereClause["value"] = allColumnValues;
+    const internalPayload = {
+      limitBy: {
+        per_page: undefined,
+        page: 1,
+      },
+      filterBy: [
+        {
+          attribute: columnSpec.relation.foreignKey,
+          op: "in",
+          value: allColumnValues,
+        },
+      ],
+    };
 
-    operations.push({
-      resourceSpec: resourceSpec,
-      operation: "select",
-      filters: [whereClause],
-      selectColumns: "*",
-    });
+    const internalRelationData = await executeActionInternally(
+      {
+        resource: resourceSpec.name,
+        action: "read",
+      },
+      internalPayload
+    );
 
-    let relationData = await mentalConfig.operator(operations);
-    relationData = relationData["data"];
+    relationData = internalRelationData["respondResult"]["data"];
 
     for (
       let indexCurrent = 0;
@@ -52,8 +76,6 @@ const fillBelongsToOneResources = async (context) => {
         currentData[indexCurrent] = currentDataElement;
       }
     }
-
-    // console.log("relationData", relationData);
   }
 
   return context;

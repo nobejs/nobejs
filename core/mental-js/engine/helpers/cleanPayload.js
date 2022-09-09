@@ -110,6 +110,14 @@ const cleanPayload = async (context) => {
     otherKeys = ["limitBy", "sortBy", "filterBy"];
   }
 
+  if (payload.apiConfig !== undefined) {
+    mentalAction["apiConfig"] = payload.apiConfig;
+  } else {
+    mentalAction["apiConfig"] = {};
+  }
+
+  // console.log("includes -----", includes);
+
   const hasManyPayload = pickKeysFromObject(payload, [
     ...hasManyViaPivotColumns,
   ]);

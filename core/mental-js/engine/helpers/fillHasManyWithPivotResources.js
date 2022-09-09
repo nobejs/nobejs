@@ -1,6 +1,13 @@
+const prepareIncludes = require("./prepareIncludes");
+
 const fillHasManyWithPivotResources = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const { hasManyViaPivotColumns, hasManyViaPivotMappings } = mentalAction;
+  let includes = prepareIncludes(
+    mentalAction,
+    hasManyViaPivotColumns,
+    hasManyViaPivotMappings
+  );
 
   // Get the current data
 
@@ -15,8 +22,11 @@ const fillHasManyWithPivotResources = async (context) => {
     const operations = [];
 
     const column = hasManyViaPivotColumns[index];
-
     const columnSpec = hasManyViaPivotMappings[column];
+
+    if (!includes.includes(columnSpec.identifier)) {
+      continue;
+    }
 
     // console.log("hasManyColumns", column, columnSpec);
     let localKey = columnSpec.relation.localKey;

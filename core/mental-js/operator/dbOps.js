@@ -95,11 +95,13 @@ const dbOps = async (dbOps) => {
               dataBuilder = dataBuilder.select(dbOp.selectColumns);
             }
 
-            if (dbOp.limit) {
+            // console.log("dbOp.limit", dbOp.limit);
+
+            if (dbOp.limit !== undefined) {
               dataBuilder = dataBuilder.limit(dbOp.limit);
             }
 
-            if (dbOp.offset) {
+            if (dbOp.offset && dbOp.limit !== undefined) {
               dataBuilder = dataBuilder.offset(dbOp.offset);
             }
 

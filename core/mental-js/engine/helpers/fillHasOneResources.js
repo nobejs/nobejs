@@ -1,6 +1,11 @@
+const executeActionInternally = require("../executeActionInternally");
+const prepareIncludes = require("./prepareIncludes");
+
 const fillHasOneResources = async (context) => {
   const { mentalAction, resourceModels, mentalConfig } = context;
   const { hasOneColumns, hasOneMappings } = mentalAction;
+
+  let includes = prepareIncludes(mentalAction, hasOneColumns, hasOneMappings);
 
   // Get the current data
 
@@ -9,16 +14,14 @@ const fillHasOneResources = async (context) => {
       ? [context.mentalAction["opResult"]]
       : context.mentalAction["opResult"]["data"];
 
-  // console.log("hasOneColumns", hasOneColumns);
-
   for (let index = 0; index < hasOneColumns.length; index++) {
-    const operations = [];
-
     const column = hasOneColumns[index];
-
     const columnSpec = hasOneMappings[column];
 
-    // console.log("hasOneColumns", column, columnSpec);
+    if (!includes.includes(columnSpec.identifier)) {
+      continue;
+    }
+
     let localKey = columnSpec.relation.localKey;
     let filters = columnSpec.relation.filter;
 
@@ -28,13 +31,11 @@ const fillHasOneResources = async (context) => {
 
     allColumnValues = [...new Set(allColumnValues)];
 
-    // console.log("allColumnValues", allColumnValues);
-
     const resourceSpec = resourceModels[columnSpec.relation.resource];
 
     let whereClause = {};
     whereClause["op"] = "in";
-    whereClause["column"] = columnSpec.relation.foreignKey;
+    whereClause["attribute"] = columnSpec.relation.foreignKey;
     whereClause["value"] = allColumnValues;
 
     let filterWhereClauses = [];
@@ -44,7 +45,7 @@ const fillHasOneResources = async (context) => {
         const value = filters[key];
 
         filterWhereClauses.push({
-          column: key,
+          attribute: key,
           op: "eq",
           value: value,
         });
@@ -53,19 +54,24 @@ const fillHasOneResources = async (context) => {
 
     filterWhereClauses.push(whereClause);
 
-    console.log("filterWhereClauses", filterWhereClauses);
+    const internalPayload = {
+      limitBy: {
+        per_page: 1,
+        page: 1,
+      },
+      sortBy: [{ attribute: "created_at", order: "desc" }],
+      filterBy: filterWhereClauses,
+    };
 
-    operations.push({
-      resourceSpec: resourceSpec,
-      operation: "select",
-      filters: filterWhereClauses,
-      selectColumns: "*",
-      sortBy: [{ column: "created_at", order: "desc" }],
-      limit: 1,
-    });
+    const internalRelationData = await executeActionInternally(
+      {
+        resource: resourceSpec.name,
+        action: "read",
+      },
+      internalPayload
+    );
 
-    let relationData = await mentalConfig.operator(operations);
-    relationData = relationData["data"];
+    relationData = internalRelationData["respondResult"]["data"];
 
     for (
       let indexCurrent = 0;
@@ -86,31 +92,6 @@ const fillHasOneResources = async (context) => {
         currentData[indexCurrent] = currentDataElement;
       }
     }
-
-    // for (
-    //   let indexRelation = 0;
-    //   indexRelation < relationData.length;
-    //   indexRelation++
-    // ) {
-    //   const relationDataElement = relationData[indexRelation];
-
-    //   for (
-    //     let indexCurrent = 0;
-    //     indexCurrent < currentData.length;
-    //     indexCurrent++
-    //   ) {
-    //     const currentDataElement = currentData[indexCurrent];
-    //     if (
-    //       currentDataElement[localKey] ===
-    //       relationDataElement[columnSpec.relation.foreignKey]
-    //     ) {
-    //       currentDataElement[columnSpec.identifier] = relationDataElement;
-    //       currentData[indexCurrent] = currentDataElement;
-    //     }
-    //   }
-    // }
-
-    // console.log("relationData", relationData);
   }
 
   return context;
