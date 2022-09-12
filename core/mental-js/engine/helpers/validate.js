@@ -15,7 +15,18 @@ const addToConstraints = (
     ? attribute.relation.resolveTo
     : attribute.identifier;
 
+  let validatorTypes = validators.map((v) => {
+    return v.type;
+  });
+
   constraints[attribute_identifier] = {};
+
+  if (
+    validatorTypes.includes("optional") &&
+    payload["attribute_identifier"] === undefined
+  ) {
+    return {};
+  }
 
   for (let vCounter = 0; vCounter < validators.length; vCounter++) {
     const validator = validators[vCounter];
@@ -170,16 +181,19 @@ const validate = async (context) => {
       const operationKey = operationKeys[index];
       const operationActions = operationKey.split(",");
       if (operationActions.includes("*") || operationActions.includes(action)) {
-        if (resolveByDot(`operations.${operationKey}.validate`, attribute)) {
-          validators = [
-            ...validators,
-            ...resolveByDot(`operations.${operationKey}.validate`, attribute),
-          ];
+        const verificationType = resolveByDot(
+          `operations.${operationKey}.validate`,
+          attribute
+        );
+        if (verificationType) {
+          validators = [...validators, ...verificationType];
         }
       }
     }
 
     if (validators) {
+      // console.log("validators", attribute, validators);
+
       constraints = addToConstraints(
         constraints,
         attribute,

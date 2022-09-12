@@ -1,5 +1,38 @@
 const knex = requireKnex();
 
+const addFilters = (knex, dataBuilder, filters) => {
+  for (let index = 0; index < filters.length; index++) {
+    const filter = filters[index];
+    switch (filter.op.toLowerCase()) {
+      case "like":
+        dataBuilder = dataBuilder.where(
+          knex.raw(`LOWER(${filter.column})`),
+          "LIKE",
+          `%${filter.value.toLowerCase()}%`
+        );
+        break;
+
+      case "gte":
+        dataBuilder = dataBuilder.where(filter.column, ">=", `${filter.value}`);
+        break;
+
+      case "in":
+        // console.log("in col", filter.value);
+        dataBuilder = dataBuilder.whereIn(filter.column, filter.value);
+        break;
+
+      case "eq":
+        dataBuilder = dataBuilder.where(filter.column, "=", `${filter.value}`);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return dataBuilder;
+};
+
 const dbOps = async (dbOps) => {
   // console.log("server - run - dbops", dbOps);
 
@@ -26,8 +59,35 @@ const dbOps = async (dbOps) => {
               .returning("*");
             break;
 
+          case "soft_delete":
+            console.log(
+              "soft_delete ---",
+              dbOp.table,
+              dbOp.filters,
+              dbOp.payload
+            );
+
+            let softDeleteDataBuilder = trx(dbOp.table);
+
+            softDeleteDataBuilder = addFilters(
+              knex,
+              softDeleteDataBuilder,
+              dbOp.filters
+            );
+
+            opResult = await softDeleteDataBuilder
+              .update(dbOp.payload)
+              .returning("*");
+
+            return {
+              data: opResult,
+            };
+
+            break;
+
           case "delete":
             opResult = await trx(dbOp.table).where(dbOp.where).delete();
+
             break;
 
           case "select_first":
@@ -43,46 +103,7 @@ const dbOps = async (dbOps) => {
             const filters = dbOp.filters;
             let dataBuilder = trx(dbOp.table).whereNull("deleted_at");
             // let totalBuilder = trx(dbOp.table).whereNull("deleted_at");
-
-            for (let index = 0; index < filters.length; index++) {
-              const filter = filters[index];
-              switch (filter.op.toLowerCase()) {
-                case "like":
-                  dataBuilder = dataBuilder.where(
-                    knex.raw(`LOWER(${filter.column})`),
-                    "LIKE",
-                    `%${filter.value.toLowerCase()}%`
-                  );
-                  break;
-
-                case "gte":
-                  dataBuilder = dataBuilder.where(
-                    filter.column,
-                    ">=",
-                    `${filter.value}`
-                  );
-                  break;
-
-                case "in":
-                  // console.log("in col", filter.value);
-                  dataBuilder = dataBuilder.whereIn(
-                    filter.column,
-                    filter.value
-                  );
-                  break;
-
-                case "eq":
-                  dataBuilder = dataBuilder.where(
-                    filter.column,
-                    "=",
-                    `${filter.value}`
-                  );
-                  break;
-
-                default:
-                  break;
-              }
-            }
+            dataBuilder = addFilters(knex, dataBuilder, filters);
 
             const totalBuilder = dataBuilder.clone();
             const facetBuilder = dataBuilder.clone();

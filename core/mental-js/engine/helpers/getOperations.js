@@ -32,6 +32,20 @@ const getOperations = async (context) => {
   if (action === "delete") {
     let deleteWhere = pickKeysFromObject(payload, mentalAction.primaryColumns);
 
+    let filterBy = mentalAction.payload.filterBy || [];
+
+    let filters = filterBy
+      .filter((f) => {
+        return f.op;
+      })
+      .map((f) => {
+        return {
+          column: f.attribute.toLowerCase(),
+          op: f.op,
+          value: f.value,
+        };
+      });
+
     if (resourceSpec.softDelete === false) {
       operations.push({
         resourceSpec: resourceSpec,
@@ -39,11 +53,14 @@ const getOperations = async (context) => {
         where: deleteWhere,
       });
     } else {
+      console.log("filters", filters);
+      let localPayload = { ...payload };
+      delete localPayload.filterBy;
       operations.push({
         resourceSpec: resourceSpec,
-        operation: "update",
-        payload: payload,
-        where: deleteWhere,
+        operation: "soft_delete",
+        payload: localPayload,
+        filters: filters,
       });
     }
   }

@@ -122,11 +122,13 @@ const cleanPayload = async (context) => {
 
   // console.log("before cleaning", attributes, hasOneColumns);
 
-  let otherKeys = [];
+  // let otherKeys = [];
 
-  if (mentalAction.action === "read") {
-    otherKeys = ["limitBy", "sortBy", "filterBy"];
-  }
+  // if (mentalAction.action === "read") {
+  //   otherKeys = ["limitBy", "sortBy", "filterBy"];
+  // }
+
+  otherKeys = ["limitBy", "sortBy", "filterBy"];
 
   if (payload.apiConfig !== undefined) {
     mentalAction["apiConfig"] = payload.apiConfig;
@@ -139,6 +141,8 @@ const cleanPayload = async (context) => {
   const hasManyPayload = pickKeysFromObject(payload, [
     ...hasManyViaPivotColumns,
   ]);
+
+  // console.log("cleanPayload", payload);
 
   payload = pickKeysFromObject(payload, [
     ...directColumns,
