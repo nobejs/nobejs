@@ -118,11 +118,11 @@ const dbOps = async (dbOps) => {
 
             // console.log("dbOp.limit", dbOp.limit);
 
-            if (dbOp.limit !== undefined) {
+            if (dbOp.limit !== undefined && dbOp.limit !== 999) {
               dataBuilder = dataBuilder.limit(dbOp.limit);
             }
 
-            if (dbOp.offset && dbOp.limit !== undefined) {
+            if (dbOp.offset && dbOp.limit !== undefined && dbOp.limit !== 999) {
               dataBuilder = dataBuilder.offset(dbOp.offset);
             }
 

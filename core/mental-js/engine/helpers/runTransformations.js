@@ -35,7 +35,6 @@ const runTransformations = async (context) => {
         attribute.mutateFrom !== undefined &&
         transformations.length > 0
       ) {
-        // console.log("attribute", attribute);
         let transformedValue = currentDataItem;
         for (let index = 0; index < transformations.length; index++) {
           const transformation = transformations[index];

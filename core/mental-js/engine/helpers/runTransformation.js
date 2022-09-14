@@ -13,6 +13,10 @@ const runTransformation = async (context, valueFromSource, transformation) => {
   }
 
   switch (transformation.operation) {
+    case "alias":
+      transformedValue = transformedValue[transformation.findByKey];
+      break;
+
     case "find":
       let getWhere = {};
       getWhere[transformation.findByKey] =
@@ -67,7 +71,7 @@ const runTransformation = async (context, valueFromSource, transformation) => {
 
   //   console.log("ope", operations);
 
-  //   console.log("result", transformedValue);
+  // console.log("result", transformedValue);
 
   return transformedValue;
 };
