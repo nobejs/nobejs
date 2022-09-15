@@ -16,21 +16,23 @@ const fillHasManyWithPivotResources = async (context) => {
       ? [context.mentalAction["opResult"]]
       : context.mentalAction["opResult"]["data"];
 
-  // console.log("hasManyViaPivotColumns", hasManyViaPivotColumns);
+  // console.log("hasManyViaPivotColumns - includeRelations", includeRelations);
 
   for (let index = 0; index < hasManyViaPivotColumns.length; index++) {
     const operations = [];
 
     const column = hasManyViaPivotColumns[index];
-    const columnSpec = hasManyViaPivotMappings[column];
+    const columnSpec = { ...hasManyViaPivotMappings[column] };
 
     if (!includeRelations.includes(columnSpec.identifier)) {
       continue;
     }
 
-    // console.log("hasManyColumns", column, columnSpec);
+    // console.log("hasManyViaPivotColumns - columnSpec", column, columnSpec);
+
     let localKey = columnSpec.relation.localKey;
-    let filters = columnSpec.relation.filter;
+    let filters = {};
+    filters = columnSpec.relation.filter;
 
     let allColumnValues = currentData.map((d) => {
       return d[localKey];
@@ -47,7 +49,9 @@ const fillHasManyWithPivotResources = async (context) => {
     whereClause["column"] = columnSpec.relation.foreignKey;
     whereClause["value"] = allColumnValues;
 
-    let filterWhereClauses = [];
+    const filterWhereClauses = [];
+
+    // console.log("hasManyViaPivotColumns - filters", filters);
 
     for (const key in filters) {
       if (Object.hasOwnProperty.call(filters, key)) {
@@ -63,7 +67,10 @@ const fillHasManyWithPivotResources = async (context) => {
 
     filterWhereClauses.push(whereClause);
 
-    // console.log("filterWhereClauses has many", filterWhereClauses);
+    // console.log(
+    //   "hasManyViaPivotColumns - filterWhereClauses",
+    //   filterWhereClauses
+    // );
 
     operations.push({
       resourceSpec: {
@@ -117,6 +124,7 @@ const fillHasManyWithPivotResources = async (context) => {
 
       let resourceData = await mentalConfig.operator(operations);
       resourceData = resourceData["data"];
+      // console.log("resourceData", resourceData.length);
 
       currentDataElement[columnSpec.identifier] = resourceData;
       currentData[indexCurrent] = currentDataElement;

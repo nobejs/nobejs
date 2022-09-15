@@ -91,7 +91,7 @@ const getOperations = async (context) => {
           return element.identifier === hasManyViaPivotColumn;
         });
         const resourcePayload = hasManyPayload[hasManyViaPivotColumn];
-        let deleteWhere = attributeSpec.relation.filter || {};
+        let deleteWhere = { ...attributeSpec.relation.filter } || {};
         deleteWhere[attributeSpec.relation.foreignKey] =
           payload[attributeSpec.relation.localKey];
 

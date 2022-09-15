@@ -26,6 +26,8 @@ const cleanPayload = async (context) => {
       return `${c.identifier}`;
     });
 
+  directColumns = [...directColumns];
+
   let mutationColumns = attributes
     .filter((c) => {
       return c.mutateFrom;
@@ -33,6 +35,8 @@ const cleanPayload = async (context) => {
     .map((c) => {
       return `${c.identifier}`;
     });
+
+  mutationColumns = [...mutationColumns];
 
   // console.log("directColumns", mutationColumns);
 
@@ -44,6 +48,8 @@ const cleanPayload = async (context) => {
       relationColumns["belongs_to_one"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
+
+  belongsToOneColumns = [...belongsToOneColumns];
 
   let belongsToOneMappings = attributes
     .filter((c) => {
@@ -57,6 +63,8 @@ const cleanPayload = async (context) => {
       {}
     );
 
+  belongsToOneMappings = { ...belongsToOneMappings };
+
   let hasOneColumns = attributes
     .filter((c) => {
       return c.relation && c.relation.type === "has_one";
@@ -65,6 +73,8 @@ const cleanPayload = async (context) => {
       relationColumns["has_one"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
+
+  hasOneColumns = [...hasOneColumns];
 
   let hasOneMappings = attributes
     .filter((c) => {
@@ -78,6 +88,8 @@ const cleanPayload = async (context) => {
       {}
     );
 
+  hasOneMappings = { ...hasOneMappings };
+
   let hasManyColumns = attributes
     .filter((c) => {
       return c.relation && c.relation.type === "has_many";
@@ -86,6 +98,8 @@ const cleanPayload = async (context) => {
       relationColumns["has_many"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
+
+  hasManyColumns = [...hasManyColumns];
 
   let hasManyMappings = attributes
     .filter((c) => {
@@ -99,6 +113,8 @@ const cleanPayload = async (context) => {
       {}
     );
 
+  hasManyMappings = { ...hasManyMappings };
+
   let hasManyViaPivotColumns = attributes
     .filter((c) => {
       return c.relation && c.relation.type === "has_many_via_pivot";
@@ -107,6 +123,8 @@ const cleanPayload = async (context) => {
       relationColumns["has_many_via_pivot"].push(c.identifier);
       return `${c.relation.resolveTo || c.identifier}`;
     });
+
+  hasManyViaPivotColumns = [...hasManyViaPivotColumns];
 
   let hasManyViaPivotMappings = attributes
     .filter((c) => {
@@ -119,6 +137,8 @@ const cleanPayload = async (context) => {
         }),
       {}
     );
+
+  hasManyViaPivotMappings = { ...hasManyViaPivotMappings };
 
   // console.log("before cleaning", attributes, hasOneColumns);
 
