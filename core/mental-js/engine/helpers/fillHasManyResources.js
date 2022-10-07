@@ -58,12 +58,16 @@ const fillHasManyResources = async (context) => {
 
     filterWhereClauses.push(whereClause);
 
+    let sortBy = resourceSpec.sortBy || [
+      { attribute: "created_at", order: "desc" },
+    ];
+
     const internalPayload = {
       limitBy: {
         per_page: undefined,
         page: 1,
       },
-      sortBy: [{ attribute: "created_at", order: "desc" }],
+      sortBy: sortBy,
       filterBy: filterWhereClauses,
     };
 

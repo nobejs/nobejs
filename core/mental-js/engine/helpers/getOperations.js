@@ -135,7 +135,7 @@ const getOperations = async (context) => {
   if (action === "read") {
     let limitBy = mentalAction.payload.limitBy || { page: 1, per_page: 10 };
     let filterBy = mentalAction.payload.filterBy || [];
-    let sortBy = mentalAction.payload.sortBy || [];
+    let sortBy = mentalAction.payload.sortBy || resourceSpec.sortBy || [];
     const table = resourceSpec.meta.table;
 
     const selectColumns = [
