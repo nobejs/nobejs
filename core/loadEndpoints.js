@@ -9,51 +9,22 @@ module.exports = function (app) {
     api.endpoints.forEach((endpoint, i) => {
       // console.log("endpoint", endpoint);
 
-      if (endpoint[0] === "crud") {
-        let apiPath = generateApiPath(api, endpoint);
+      let apiPath = generateApiPath(api, endpoint);
 
-        let crudPaths = [
-          ["get", "$path", "index"],
-          ["post", "$path", "store"],
-          ["get", "$path/:uuid", "show"],
-          ["put", "$path/:uuid", "update"],
-          ["delete", "$path/:uuid", "destroy"],
-        ];
+      // console.log("endpoint[0]", endpoint[0]);
 
-        crudPaths.forEach((crudPath) => {
-          let finalCrudPath = crudPath[1].replace("$path", apiPath);
-          app[crudPath[0]](finalCrudPath, async (req, res, next) => {
-            let result = await crudEndpointStrategy(endpoint[2], {
-              operation: crudPath[2],
-              req,
-              res,
-              next,
-              reqBody: req.body,
-              reqParams: req.params,
-              reqQuery: req.query,
-              reqHeaders: req.Headers,
-            });
-            return res.code(200).send(result[responseKey]);
-          });
+      app[endpoint[0]](apiPath, async (req, res, next) => {
+        let result = await endpointStrategy(endpoint[2], {
+          req,
+          res,
+          next,
+          reqBody: req.body,
+          reqParams: req.params,
+          reqQuery: req.query,
+          reqHeaders: req.Headers,
         });
-      } else {
-        let apiPath = generateApiPath(api, endpoint);
-
-        // console.log("endpoint[0]", endpoint[0]);
-
-        app[endpoint[0]](apiPath, async (req, res, next) => {
-          let result = await endpointStrategy(endpoint[2], {
-            req,
-            res,
-            next,
-            reqBody: req.body,
-            reqParams: req.params,
-            reqQuery: req.query,
-            reqHeaders: req.Headers,
-          });
-          return res.code(200).send(result[responseKey]);
-        });
-      }
+        return res.code(200).send(result[responseKey]);
+      });
     });
   });
 };

@@ -12,13 +12,6 @@ global.endpointStrategy = executeStrategy([
   "respond",
 ]);
 
-global.crudEndpointStrategy = executeStrategy([
-  "prepare",
-  "authorize",
-  "handle",
-  "respond",
-]);
-
 global.queueJobStrategy = executeStrategy(["prepare", "authorize", "handle"]);
 
 global.testStrategy = executeStrategy(["authorize", "handle", "respond"]);
